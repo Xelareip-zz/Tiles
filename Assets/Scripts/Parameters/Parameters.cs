@@ -27,17 +27,40 @@ public class Parameters : ParameterBase
 		}
 	}
 
-	[Parameter("Absorb speed")]
-	public float absorbSpeed = 5.0f;
+	[Parameter]
+	public bool moveNorth = true;
+	[Parameter]
+	public bool moveSouth = false;
+	[Parameter]
+	public bool moveEast = false;
+	[Parameter]
+	public bool moveWest = false;
+	[Parameter]
+	public bool moveNorthEast = true;
+	[Parameter]
+	public bool moveNorthWest = true;
+	[Parameter]
+	public bool moveSouthEast = false;
+	[Parameter]
+	public bool moveSouthWest = false;
 
-	[Parameter("Charge speed")]
-	public float chargeSpeed = 3.0f;
-	[Parameter("Zoom out speed")]
-	public float zoomOutSpeed = 0.5f;
+	[Parameter("Player speed")]
+	public float playerSpeed = 4.0f;
+	[Parameter("Camera speed")]
+	public float cameraSpeed = 1.0f;
 
-	[Parameter("reduce speed")]
-	public float reduceSpeed = 0.01f;
-	
+	[Parameter("Input queue")]
+	public int inputQueueSize = 2;
+	[Parameter]
+	public bool drawPath = true;
+
+	[Parameter("Distance points")]
+	public bool pointsPerLine = true;
+
+	[Parameter]
+	public bool LoopLeftRight = true;
+
+
 
 	private Parameters()
 	{

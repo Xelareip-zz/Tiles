@@ -7,16 +7,32 @@ public enum DIRECTIONS
 	NORTH,
 	SOUTH,
 	EAST,
-	WEST
+	WEST,
+	NORTH_EAST,
+	NORTH_WEST,
+	SOUTH_EAST,
+	SOUTH_WEST,
 };
 
 public class TileBase : MonoBehaviour
 {
 	public Collider2D coll;
 
-	public TileBase[] neighbors = new TileBase[4];
+	private TileBase[] _neighbors = new TileBase[8];
+	public TileBase[] neighbors
+	{
+		get
+		{
+			return _neighbors;
+		}
+	}
 
 	public GameObject clickableObj;
+	public TileLine parentLine;
+
+	void Awake()
+	{
+	}
 
 	public virtual void TileReached()
 	{
@@ -49,7 +65,7 @@ public class TileBase : MonoBehaviour
 
 				if (coll.OverlapPoint(worldPoint))
 				{
-					TilePlayer.Instance.targetTile = this;
+					TilePlayer.Instance.QueueTile(this);
 				}
 			}
 		}

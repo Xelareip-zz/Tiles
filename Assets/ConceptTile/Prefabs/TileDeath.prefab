@@ -53,7 +53,7 @@ GameObject:
   - component: {fileID: 4225351568728836}
   - component: {fileID: 212504928131973178}
   - component: {fileID: 61337264005605656}
-  - component: {fileID: 114386302767652876}
+  - component: {fileID: 114025315706189110}
   m_Layer: 0
   m_Name: TileDeath
   m_TagString: Wall
@@ -127,7 +127,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
---- !u!114 &114386302767652876
+--- !u!114 &114025315706189110
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -135,18 +135,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1782964711776202}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1cfd926025c2e14f976a7a5f68bc9f3, type: 3}
+  m_Script: {fileID: 11500000, guid: c2a8fac9a4351b445824473ae21d1f40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   coll: {fileID: 61337264005605656}
-  neighbors:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   clickableObj: {fileID: 1439202744280172}
-  points: 1
-  pointsVisual: {fileID: 0}
+  pointsVisual: {fileID: 1466722930671966}
 --- !u!212 &212147050598666250
 SpriteRenderer:
   m_ObjectHideFlags: 1

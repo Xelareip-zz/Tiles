@@ -109,11 +109,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coll: {fileID: 61337264005605656}
-  neighbors:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   clickableObj: {fileID: 1579635531710668}
 --- !u!212 &212504928131973178
 SpriteRenderer:
