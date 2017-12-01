@@ -25,24 +25,21 @@ public class TileLine : MonoBehaviour
 	{
 		for (int i = 0; i < tileCount; ++i)
 		{
-			GameObject tileModel;
+			TileBase newTile = null;
+			if (tiles.Count <= i)
+			{
+				GameObject tileModel;
+				float randValue = Random.Range(0, 90 + 10 * TileManager.Instance.possibleTiles.Count);
+				int modelIdx = Mathf.Max(0, Mathf.FloorToInt((randValue - 100.0f) / 10) + 1);
+				tileModel = TileManager.Instance.possibleTiles[modelIdx];
 
-			float randValue = Random.Range(0, 110);
-			if (randValue > 100)
-			{
-				tileModel = TileManager.Instance.possibleTiles[2];
-			}
-			else if (randValue > 90)
-			{
-				tileModel = TileManager.Instance.possibleTiles[1];
+				GameObject newTileObj = Instantiate(tileModel, transform.position + Vector3.right * tileOffset * i, transform.rotation, transform);
+				newTile = newTileObj.GetComponent<TileBase>();
 			}
 			else
 			{
-				tileModel = TileManager.Instance.possibleTiles[0];
+				newTile = tiles[i];
 			}
-
-			GameObject newTileObj = Instantiate(tileModel, transform.position + Vector3.right * tileOffset * i, transform.rotation, transform);
-			TileBase newTile = newTileObj.GetComponent<TileBase>();
 			newTile.parentLine = this;
 			tiles.Add(newTile);
 			/*if (nextLine != null)
@@ -77,7 +74,7 @@ public class TileLine : MonoBehaviour
 					newTile.neighbors[(int)DIRECTIONS.SOUTH_WEST] = previousLine.tiles[i - 1];
 					previousLine.tiles[i - 1].neighbors[(int)DIRECTIONS.NORTH_EAST] = newTile;
 				}
-				else if (Parameters.Instance.LoopLeftRight)
+				else if (Parameters.Instance.loopLeftRight)
 				{
 					newTile.neighbors[(int)DIRECTIONS.SOUTH_WEST] = previousLine.tiles[previousLine.tiles.Count - 1];
 					previousLine.tiles[previousLine.tiles.Count - 1].neighbors[(int)DIRECTIONS.NORTH_EAST] = newTile;
@@ -88,7 +85,7 @@ public class TileLine : MonoBehaviour
 					newTile.neighbors[(int)DIRECTIONS.SOUTH_EAST] = previousLine.tiles[i + 1];
 					previousLine.tiles[i + 1].neighbors[(int)DIRECTIONS.NORTH_WEST] = newTile;
 				}
-				else if (Parameters.Instance.LoopLeftRight)
+				else if (Parameters.Instance.loopLeftRight)
 				{
 					newTile.neighbors[(int)DIRECTIONS.SOUTH_EAST] = previousLine.tiles[0];
 					previousLine.tiles[0].neighbors[(int)DIRECTIONS.NORTH_WEST] = newTile;
@@ -99,7 +96,7 @@ public class TileLine : MonoBehaviour
 				tiles[i - 1].neighbors[(int)DIRECTIONS.EAST] = newTile;
 				newTile.neighbors[(int)DIRECTIONS.WEST] = tiles[i - 1];
 			}
-			if (i == tileCount - 1 && Parameters.Instance.LoopLeftRight)
+			if (i == tileCount - 1 && Parameters.Instance.loopLeftRight)
 			{
 				newTile.neighbors[(int)DIRECTIONS.EAST] = tiles[0];
 				tiles[0].neighbors[(int)DIRECTIONS.WEST] = newTile;

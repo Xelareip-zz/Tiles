@@ -14,6 +14,7 @@ public class TilePlayer : MonoBehaviour
 	}
 
 	public GameObject endGame;
+	public CameraMove cameraMove;
 
 	public float speed;
 
@@ -28,6 +29,8 @@ public class TilePlayer : MonoBehaviour
 	public List<Transform> loopGhosts;
 
 	public int maxDistance;
+
+	public float difficulty;
 
 	public bool TileReached()
 	{
@@ -51,6 +54,100 @@ public class TilePlayer : MonoBehaviour
 			inputQueueSize = Parameters.Instance.inputQueueSize;
 		}
 		maxDistance = 0;
+		difficulty = 0;
+	}
+
+	public float GetSpeed()
+	{
+		return speed * (difficulty * Parameters.Instance.difficultyIncrease / 100.0f + 1.0f);
+	}
+
+	public float GetCameraSpeed()
+	{
+		return Parameters.Instance.cameraSpeed * (difficulty * Parameters.Instance.difficultyIncrease / 100.0f + 1.0f);
+	}
+
+	public void MoveLeft()
+	{
+		TileBase rootTile;
+		if (tilesQueue.Count > inputQueueSize - 1)
+		{
+			return;
+		}
+		else if (tilesQueue.Count > 0)
+		{
+			rootTile = tilesQueue[tilesQueue.Count - 1];
+		}
+		else
+		{
+			rootTile = currentTile;
+		}
+		if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.NORTH_WEST]))
+		{
+			QueueTile(rootTile.neighbors[(int)DIRECTIONS.NORTH_WEST]);
+		}
+		else if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.WEST]))
+		{
+			QueueTile(rootTile.neighbors[(int)DIRECTIONS.WEST]);
+		}
+		else if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.SOUTH_WEST]))
+		{
+			QueueTile(rootTile.neighbors[(int)DIRECTIONS.SOUTH_WEST]);
+		}
+	}
+
+	public void MoveNorth()
+	{
+		TileBase rootTile;
+		if (tilesQueue.Count > inputQueueSize - 1)
+		{
+			return;
+		}
+		else if (tilesQueue.Count > 0)
+		{
+			rootTile = tilesQueue[tilesQueue.Count - 1];
+		}
+		else
+		{
+			rootTile = currentTile;
+		}
+		if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.NORTH]))
+		{
+			QueueTile(rootTile.neighbors[(int)DIRECTIONS.NORTH]);
+		}
+		else if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.SOUTH]))
+		{
+			QueueTile(rootTile.neighbors[(int)DIRECTIONS.SOUTH]);
+		}
+	}
+
+	public void MoveRight()
+	{
+		TileBase rootTile;
+		if (tilesQueue.Count > inputQueueSize - 1)
+		{
+			return;
+		}
+		else if (tilesQueue.Count > 0)
+		{
+			rootTile = tilesQueue[tilesQueue.Count - 1];
+		}
+		else
+		{
+			rootTile = currentTile;
+		}
+		if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.NORTH_EAST]))
+		{
+			QueueTile(rootTile.neighbors[(int)DIRECTIONS.NORTH_EAST]);
+		}
+		else if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.EAST]))
+		{
+			QueueTile(rootTile.neighbors[(int)DIRECTIONS.EAST]);
+		}
+		else if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.SOUTH_EAST]))
+		{
+			QueueTile(rootTile.neighbors[(int)DIRECTIONS.SOUTH_EAST]);
+		}
 	}
 
 	public void FindTile()
@@ -76,6 +173,22 @@ public class TilePlayer : MonoBehaviour
 		currentTile = closestTile;
 	}
 
+	void CheckKeyboard()
+	{
+		if (Input.GetKeyDown(KeyCode.LeftArrow))
+		{
+			MoveLeft();
+		}
+		if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow))
+		{
+			MoveNorth();
+		}
+		if (Input.GetKeyDown(KeyCode.RightArrow))
+		{
+			MoveRight();
+		}
+	}
+
 	void Update ()
 	{
 		if (CheckDeath())
@@ -83,7 +196,9 @@ public class TilePlayer : MonoBehaviour
 			EndGame();
 			return;
 		}
-
+		cameraMove.speed = Vector3.up * GetCameraSpeed();
+		difficulty = maxDistance;
+		CheckKeyboard();
 		if (GoToTile())
 		{
 			int lineNumber = tilesQueue[0].parentLine.lineNumber;
@@ -251,13 +366,13 @@ public class TilePlayer : MonoBehaviour
 
 			targetMove.z = 0;
 
-			if (targetMove.magnitude < speed * Time.deltaTime)
+			if (targetMove.magnitude < GetSpeed() * Time.deltaTime)
 			{
 				transform.position = new Vector3(tilesQueue[0].transform.position.x, tilesQueue[0].transform.position.y, transform.position.z);
 				return true;
 			}
 
-			transform.position += targetMove.normalized * speed * Time.deltaTime;
+			transform.position += targetMove.normalized * GetSpeed() * Time.deltaTime;
 		}
 		return false;
 	}

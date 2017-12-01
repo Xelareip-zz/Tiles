@@ -26,6 +26,18 @@ public class TileManager : MonoBehaviour
 
 	void Awake()
 	{
+		if (Parameters.Instance.mustTiles == false)
+		{
+			for (int i = 0; i < possibleTiles.Count; ++i)
+			{
+				if (possibleTiles[i].gameObject.name == "TileMust")
+				{
+					possibleTiles.RemoveAt(i);
+					break;
+				}
+			}
+
+		}
 		killLine.transform.position = new Vector3(killLine.transform.position.x, transform.position.y + killLimit, killLine.transform.position.z);
 		instance = this;
 		for (int lineIdx = 0; lineIdx < tileLines.Count; ++lineIdx)

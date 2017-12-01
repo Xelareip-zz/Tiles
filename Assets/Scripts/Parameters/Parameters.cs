@@ -28,9 +28,9 @@ public class Parameters : ParameterBase
 	}
 
 	[Parameter]
-	public bool moveNorth = true;
+	public bool moveNorth = false;
 	[Parameter]
-	public bool moveSouth = false;
+	public bool moveSouth = true;
 	[Parameter]
 	public bool moveEast = false;
 	[Parameter]
@@ -50,7 +50,7 @@ public class Parameters : ParameterBase
 	public float cameraSpeed = 1.0f;
 
 	[Parameter("Input queue")]
-	public int inputQueueSize = 2;
+	public int inputQueueSize = -1;
 	[Parameter]
 	public bool drawPath = true;
 
@@ -58,7 +58,13 @@ public class Parameters : ParameterBase
 	public bool pointsPerLine = true;
 
 	[Parameter]
-	public bool LoopLeftRight = true;
+	public bool loopLeftRight = true;
+
+	[Parameter]
+	public bool mustTiles = true;
+
+	[Parameter("Difficulty Increase (%/line)")]
+	public float difficultyIncrease = 1.0f;
 
 
 
