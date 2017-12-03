@@ -18,7 +18,7 @@ public class TileManager : MonoBehaviour
 
 	public List<TileLine> tileLines = new List<TileLine>();
 
-	public float killLimit;
+	private float killLimit;
 	public float spawnLimit;
 	public float lineOffset;
 
@@ -26,6 +26,12 @@ public class TileManager : MonoBehaviour
 
 	void Awake()
 	{
+		instance = this;
+	}
+
+	void Start()
+	{
+		killLimit = (Parameters.Instance.deathHeight / 100.0f - 0.5f) * Camera.main.orthographicSize * 2.0f;
 		if (Parameters.Instance.mustTiles == false)
 		{
 			for (int i = 0; i < possibleTiles.Count; ++i)
@@ -39,7 +45,7 @@ public class TileManager : MonoBehaviour
 
 		}
 		killLine.transform.position = new Vector3(killLine.transform.position.x, transform.position.y + killLimit, killLine.transform.position.z);
-		instance = this;
+		killLine.transform.localScale = new Vector3(Parameters.Instance.width * Parameters.Instance.spaceSize * 2.0f, killLine.transform.localScale.y, killLine.transform.localScale.z);
 		for (int lineIdx = 0; lineIdx < tileLines.Count; ++lineIdx)
 		{
 			tileLines[lineIdx].SpawnTiles();
@@ -47,6 +53,12 @@ public class TileManager : MonoBehaviour
 		SpawnLines();
 
 		TilePlayer.Instance.FindTile();
+		TilePlayer.Instance.transform.position = new Vector3(TilePlayer.Instance.currentTile.transform.position.x, TilePlayer.Instance.currentTile.transform.position.y, TilePlayer.Instance.transform.position.z);
+    }
+
+	public float GetWidth()
+	{
+		return Parameters.Instance.width * Parameters.Instance.spaceSize;
 	}
 
 	void Update()

@@ -66,6 +66,13 @@ public class Parameters : ParameterBase
 	[Parameter("Difficulty Increase (%/line)")]
 	public float difficultyIncrease = 1.0f;
 
+	[Parameter]
+	public int width = 5;
+	[Parameter]
+	public float spaceSize = 1.0f;
+	[Parameter("Death level (height%)")]
+	public float deathHeight = 25.0f;
+
 
 
 	private Parameters()

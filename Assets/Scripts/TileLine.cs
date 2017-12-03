@@ -8,9 +8,6 @@ public class TileLine : MonoBehaviour
 
 	public int lineNumber;
 
-	public int tileCount;
-	public int tileOffset;
-
 	public List<TileBase> tiles;
 
 	public TileLine nextLine;
@@ -23,17 +20,21 @@ public class TileLine : MonoBehaviour
 
 	public void SpawnTiles()
 	{
-		for (int i = 0; i < tileCount; ++i)
+		for (int i = 0; i < Parameters.Instance.width; ++i)
 		{
 			TileBase newTile = null;
 			if (tiles.Count <= i)
 			{
 				GameObject tileModel;
-				float randValue = Random.Range(0, 90 + 10 * TileManager.Instance.possibleTiles.Count);
-				int modelIdx = Mathf.Max(0, Mathf.FloorToInt((randValue - 100.0f) / 10) + 1);
+				int modelIdx = 0;
+				if (lineNumber > 5)
+				{
+					float randValue = Random.Range(0, 90 + 10 * TileManager.Instance.possibleTiles.Count);
+					modelIdx = Mathf.Max(0, Mathf.FloorToInt((randValue - 100.0f) / 10) + 1);
+				}
 				tileModel = TileManager.Instance.possibleTiles[modelIdx];
-
-				GameObject newTileObj = Instantiate(tileModel, transform.position + Vector3.right * tileOffset * i, transform.rotation, transform);
+				Vector3 tilePos = transform.position + Vector3.right * (-Parameters.Instance.spaceSize * (Parameters.Instance.width - 1) / 2.0f + Parameters.Instance.spaceSize * i);
+				GameObject newTileObj = Instantiate(tileModel, tilePos, transform.rotation, transform);
 				newTile = newTileObj.GetComponent<TileBase>();
 			}
 			else
@@ -96,7 +97,7 @@ public class TileLine : MonoBehaviour
 				tiles[i - 1].neighbors[(int)DIRECTIONS.EAST] = newTile;
 				newTile.neighbors[(int)DIRECTIONS.WEST] = tiles[i - 1];
 			}
-			if (i == tileCount - 1 && Parameters.Instance.loopLeftRight)
+			if (i == Parameters.Instance.width - 1 && Parameters.Instance.loopLeftRight)
 			{
 				newTile.neighbors[(int)DIRECTIONS.EAST] = tiles[0];
 				tiles[0].neighbors[(int)DIRECTIONS.WEST] = newTile;

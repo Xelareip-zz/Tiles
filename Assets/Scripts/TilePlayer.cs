@@ -43,6 +43,8 @@ public class TilePlayer : MonoBehaviour
 
 	void Awake()
 	{
+		loopGhosts[0].transform.position = transform.position + Vector3.left * TileManager.Instance.GetWidth();
+		loopGhosts[1].transform.position = transform.position + Vector3.right * TileManager.Instance.GetWidth();
 		instance = this;
 		speed = Parameters.Instance.playerSpeed;
 		if (Parameters.Instance.inputQueueSize < 0)
