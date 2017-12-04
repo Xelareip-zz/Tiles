@@ -61,7 +61,7 @@ public class Parameters : ParameterBase
 	public bool loopLeftRight = true;
 
 	[Parameter]
-	public bool mustTiles = true;
+	public bool mustTiles = false;
 
 	[Parameter("Difficulty Increase (%/line)")]
 	public float difficultyIncrease = 1.0f;
@@ -69,7 +69,7 @@ public class Parameters : ParameterBase
 	[Parameter]
 	public int width = 5;
 	[Parameter]
-	public float spaceSize = 1.0f;
+	public float spaceSize = 2.0f;
 	[Parameter("Death level (height%)")]
 	public float deathHeight = 25.0f;
 
