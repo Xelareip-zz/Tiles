@@ -31,6 +31,7 @@ public class TileManager : MonoBehaviour
 
 	void Start()
 	{
+		lineOffset = Parameters.Instance.spaceSize;
 		killLimit = (Parameters.Instance.deathHeight / 100.0f - 0.5f) * Camera.main.orthographicSize * 2.0f;
 		if (Parameters.Instance.mustTiles == false)
 		{
@@ -91,7 +92,7 @@ public class TileManager : MonoBehaviour
 
 	void SpawnLines()
 	{
-		while (tileLines[tileLines.Count - 1].transform.position.y < transform.position.y + spawnLimit)
+		while (tileLines[tileLines.Count - 1].transform.position.y < transform.position.y + TileCamera.Instance.camera.orthographicSize)
 		{
 			GameObject newLineObj = Instantiate(possibleLines[0], tileLines[tileLines.Count - 1].transform.position + Vector3.up * lineOffset, Quaternion.identity);
 			TileLine newLine = newLineObj.GetComponent<TileLine>();

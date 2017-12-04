@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class TilePlayer : MonoBehaviour
@@ -59,6 +58,16 @@ public class TilePlayer : MonoBehaviour
 		difficulty = 0;
 	}
 
+	void Start()
+	{
+		SwipeManager.Instance.Swiped += OnSwipe;
+	}
+
+	void OnDestroy()
+	{
+		SwipeManager.Instance.Swiped -= OnSwipe;
+	}
+
 	public float GetSpeed()
 	{
 		return speed * (difficulty * Parameters.Instance.difficultyIncrease / 100.0f + 1.0f);
@@ -67,6 +76,50 @@ public class TilePlayer : MonoBehaviour
 	public float GetCameraSpeed()
 	{
 		return Parameters.Instance.cameraSpeed * (difficulty * Parameters.Instance.difficultyIncrease / 100.0f + 1.0f);
+	}
+
+	public TileBase GetRootTile()
+	{
+		if (tilesQueue.Count > 0)
+		{
+			return tilesQueue[tilesQueue.Count - 1];
+		}
+		else
+		{
+			return currentTile;
+		}
+	}
+
+	public void OnSwipe(float angle)
+	{
+		if (Parameters.Instance.swipeControl)
+		{
+			TileBase rootTile = GetRootTile();
+			float bestDot = float.MinValue;
+			TileBase bestTarget = null;
+			for (int targetIdx = 0; targetIdx < clickableTiles.Count; ++targetIdx)
+			{
+				TileBase potentialTarget = clickableTiles[targetIdx];
+				if (potentialTarget == null)
+				{
+					continue;
+				}
+
+				float neighborAngle = rootTile.NeighborToAngle(potentialTarget);
+				float dot = Vector3.Dot(Quaternion.AngleAxis(neighborAngle, Vector3.forward) * Vector3.up, Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up);
+
+				if (dot > bestDot)
+				{
+					bestDot = dot;
+					bestTarget = potentialTarget;
+				}
+			}
+
+			if (bestTarget != null)
+			{
+				QueueTile(bestTarget);
+			}
+		}
 	}
 
 	public void MoveLeft()

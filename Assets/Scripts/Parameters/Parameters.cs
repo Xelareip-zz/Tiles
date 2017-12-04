@@ -72,6 +72,10 @@ public class Parameters : ParameterBase
 	public float spaceSize = 2.0f;
 	[Parameter("Death level (height%)")]
 	public float deathHeight = 25.0f;
+	[Parameter("Swipe?")]
+	public bool swipeControl = false;
+	[Parameter("Swipe sensibility")]
+	public float swipeSensibility = 80.0f;
 
 
 
