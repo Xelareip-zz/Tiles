@@ -62,6 +62,8 @@ public class Parameters : ParameterBase
 
 	[Parameter]
 	public bool mustTiles = false;
+	[Parameter("Fractured tiles")]
+	public bool fragileTiles = false;
 
 	[Parameter("Difficulty Increase (%/line)")]
 	public float difficultyIncrease = 1.0f;

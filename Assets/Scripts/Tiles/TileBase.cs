@@ -39,6 +39,11 @@ public class TileBase : MonoBehaviour
 
 	}
 
+	public virtual void TileLeft()
+	{
+
+	}
+
 	bool HasInput()
 	{
 		return Input.GetMouseButtonDown(0) || Input.touchCount != 0;

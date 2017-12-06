@@ -268,6 +268,10 @@ public class TilePlayer : MonoBehaviour
 			{
 				tilesQueue.RemoveAt(0);
 			}
+			if (tilesQueue.Count > 0)
+			{
+				currentTile.TileLeft();
+			}
 			FindBestGhost();
 		}
 
@@ -364,6 +368,10 @@ public class TilePlayer : MonoBehaviour
 			if (tilesQueue.Count == 1)
 			{
 				FindBestGhost();
+			}
+			if (tilesQueue.Count == 1)
+			{
+				currentTile.TileLeft();
 			}
 		}
 	}

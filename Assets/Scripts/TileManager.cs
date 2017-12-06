@@ -27,6 +27,7 @@ public class TileManager : MonoBehaviour
 	void Awake()
 	{
 		instance = this;
+		TileLine.lineCount = 0;
 	}
 
 	void Start()
@@ -38,6 +39,18 @@ public class TileManager : MonoBehaviour
 			for (int i = 0; i < possibleTiles.Count; ++i)
 			{
 				if (possibleTiles[i].gameObject.name == "TileMust")
+				{
+					possibleTiles.RemoveAt(i);
+					break;
+				}
+			}
+
+		}
+		if (Parameters.Instance.fragileTiles == false)
+		{
+			for (int i = 0; i < possibleTiles.Count; ++i)
+			{
+				if (possibleTiles[i].gameObject.name == "TileFragile")
 				{
 					possibleTiles.RemoveAt(i);
 					break;
