@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TilePlayer : MonoBehaviour
@@ -31,6 +32,8 @@ public class TilePlayer : MonoBehaviour
 
 	public float difficulty;
 
+	public float autoMoveTimer;
+
 	public bool TileReached()
 	{
 		if (tilesQueue.Count > 0)
@@ -56,6 +59,11 @@ public class TilePlayer : MonoBehaviour
 		}
 		maxDistance = 0;
 		difficulty = 0;
+		autoMoveTimer = Parameters.Instance.autoMoveDelay;
+		if (Parameters.Instance.autoMove)
+		{
+			cameraMove.followPlayer = true;
+		}
 	}
 
 	void Start()
@@ -205,6 +213,24 @@ public class TilePlayer : MonoBehaviour
 		}
 	}
 
+	public void MoveDirection(string dir)
+	{
+		DIRECTIONS direction = (DIRECTIONS)Enum.Parse(typeof(DIRECTIONS), dir);
+		TileBase rootTile = GetRootTile();
+		if (rootTile == false)
+		{
+			return;
+		}
+		TileBase target = rootTile.neighbors[(int)direction];
+        if (target != null)
+		{
+			if (clickableTiles.Contains(target))
+			{
+				QueueTile(target);
+			}
+		}
+	}
+
 	public void FindTile()
 	{
 		float minDist = float.MaxValue;
@@ -251,6 +277,7 @@ public class TilePlayer : MonoBehaviour
 			EndGame();
 			return;
 		}
+		AutoMove();
 		cameraMove.speed = Vector3.up * GetCameraSpeed();
 		difficulty = maxDistance;
 		CheckKeyboard();
@@ -277,6 +304,29 @@ public class TilePlayer : MonoBehaviour
 
 		ActivateClickableTiles();
 		DrawPath();
+	}
+
+
+	public void AutoMove()
+	{
+		if (Parameters.Instance.autoMove)
+		{
+			bool timerPassed = autoMoveTimer > 0.0f;
+			autoMoveTimer -= Time.deltaTime;
+
+			if (timerPassed == false && autoMoveTimer <= 0.0f)
+			{
+				TileBase savedTile = null;
+				if (tilesQueue.Count > 0)
+				{
+					savedTile = tilesQueue[0];
+                }
+				tilesQueue.Clear();
+				QueueTile(savedTile);
+				MoveDirection("NORTH");
+				autoMoveTimer = Parameters.Instance.autoMoveDelay;
+			}
+		}
 	}
 
 	public void FindBestGhost()
@@ -362,6 +412,10 @@ public class TilePlayer : MonoBehaviour
 
 	public void QueueTile(TileBase tile)
 	{
+		if (tile == null)
+		{
+			return;
+		}
 		if (tilesQueue.Count < inputQueueSize)
 		{
 			tilesQueue.Add(tile);

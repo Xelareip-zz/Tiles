@@ -79,6 +79,12 @@ public class Parameters : ParameterBase
 	[Parameter("Swipe sensibility")]
 	public float swipeSensibility = 80.0f;
 
+	[Parameter("Auto move")]
+	public bool autoMove = false;
+
+	[Parameter("Auto move delay")]
+	public float autoMoveDelay = 2.0f;
+
 
 
 	private Parameters()
