@@ -24,7 +24,7 @@ public class CameraMove : MonoBehaviour
 		{
 			if (TilePlayer.Instance != null)
 			{
-				transform.position += (TilePlayer.Instance.transform.position.y - transform.position.y) * Time.deltaTime * Vector3.up;
+				transform.position += (TilePlayer.Instance.transform.position.y + Parameters.Instance.cameraOffset - transform.position.y) * Time.deltaTime * Vector3.up;
 			}
 		}
 	}

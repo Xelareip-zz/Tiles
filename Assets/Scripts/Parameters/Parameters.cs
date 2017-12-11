@@ -27,21 +27,13 @@ public class Parameters : ParameterBase
 		}
 	}
 
-	[Parameter]
 	public bool moveNorth = false;
-	[Parameter]
-	public bool moveSouth = true;
-	[Parameter]
-	public bool moveEast = false;
-	[Parameter]
-	public bool moveWest = false;
-	[Parameter]
-	public bool moveNorthEast = true;
-	[Parameter]
-	public bool moveNorthWest = true;
-	[Parameter]
+	public bool moveSouth = false;
+	public bool moveEast = true;
+	public bool moveWest = true;
+	public bool moveNorthEast = false;
+	public bool moveNorthWest = false;
 	public bool moveSouthEast = false;
-	[Parameter]
 	public bool moveSouthWest = false;
 
 	[Parameter("Player speed")]
@@ -73,17 +65,19 @@ public class Parameters : ParameterBase
 	[Parameter]
 	public float spaceSize = 2.0f;
 	[Parameter("Death level (height%)")]
-	public float deathHeight = 25.0f;
+	public float deathHeight = -50.0f;
 	[Parameter("Swipe?")]
-	public bool swipeControl = false;
+	public bool swipeControl = true;
 	[Parameter("Swipe sensibility")]
 	public float swipeSensibility = 80.0f;
 
-	[Parameter("Auto move")]
-	public bool autoMove = false;
+	public bool autoMove = true;
 
 	[Parameter("Auto move delay")]
 	public float autoMoveDelay = 2.0f;
+
+	[Parameter]
+	public float cameraOffset = 4.0f;
 
 
 

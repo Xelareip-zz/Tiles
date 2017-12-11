@@ -58,8 +58,15 @@ public class TileManager : MonoBehaviour
 			}
 
 		}
-		killLine.transform.position = new Vector3(killLine.transform.position.x, transform.position.y + killLimit, killLine.transform.position.z);
-		killLine.transform.localScale = new Vector3(Parameters.Instance.width * Parameters.Instance.spaceSize * 2.0f, killLine.transform.localScale.y, killLine.transform.localScale.z);
+		if (Parameters.Instance.autoMove)
+		{
+			Destroy(killLine);
+		}
+		else
+		{
+			killLine.transform.position = new Vector3(killLine.transform.position.x, transform.position.y + killLimit, killLine.transform.position.z);
+			killLine.transform.localScale = new Vector3(Parameters.Instance.width * Parameters.Instance.spaceSize * 2.0f, killLine.transform.localScale.y, killLine.transform.localScale.z);
+		}
 		for (int lineIdx = 0; lineIdx < tileLines.Count; ++lineIdx)
 		{
 			tileLines[lineIdx].SpawnTiles();

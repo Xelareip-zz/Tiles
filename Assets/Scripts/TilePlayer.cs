@@ -33,6 +33,8 @@ public class TilePlayer : MonoBehaviour
 	public float difficulty;
 
 	public float autoMoveTimer;
+	public GameObject automoveVisual;
+	public TileBase autoMoveTile;
 
 	public bool TileReached()
 	{
@@ -213,22 +215,24 @@ public class TilePlayer : MonoBehaviour
 		}
 	}
 
-	public void MoveDirection(string dir)
+	public TileBase MoveDirection(string dir, bool force = false)
 	{
 		DIRECTIONS direction = (DIRECTIONS)Enum.Parse(typeof(DIRECTIONS), dir);
 		TileBase rootTile = GetRootTile();
 		if (rootTile == false)
 		{
-			return;
+			return null;
 		}
 		TileBase target = rootTile.neighbors[(int)direction];
         if (target != null)
 		{
-			if (clickableTiles.Contains(target))
+			if (force || clickableTiles.Contains(target))
 			{
 				QueueTile(target);
+				return target;
 			}
 		}
+		return null;
 	}
 
 	public void FindTile()
@@ -262,7 +266,7 @@ public class TilePlayer : MonoBehaviour
 		}
 		if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow))
 		{
-			MoveNorth();
+			ForceAutoMove();
 		}
 		if (Input.GetKeyDown(KeyCode.RightArrow))
 		{
@@ -278,6 +282,7 @@ public class TilePlayer : MonoBehaviour
 			return;
 		}
 		AutoMove();
+		UpdateAutoMoveVisual();
 		cameraMove.speed = Vector3.up * GetCameraSpeed();
 		difficulty = maxDistance;
 		CheckKeyboard();
@@ -289,6 +294,12 @@ public class TilePlayer : MonoBehaviour
 				ScoreManager.Instance.score += lineNumber - maxDistance;
 				maxDistance = lineNumber;
             }
+
+			if (autoMoveTile == tilesQueue[0])
+			{
+				autoMoveTile = null;
+				autoMoveTimer = Parameters.Instance.autoMoveDelay;
+			}
 			tilesQueue[0].TileReached();
 			currentTile = tilesQueue[0];
 			if (tilesQueue.Count > 0)
@@ -311,22 +322,34 @@ public class TilePlayer : MonoBehaviour
 	{
 		if (Parameters.Instance.autoMove)
 		{
-			bool timerPassed = autoMoveTimer > 0.0f;
+			bool timerPassed = autoMoveTimer < 0.0f;
 			autoMoveTimer -= Time.deltaTime;
 
-			if (timerPassed == false && autoMoveTimer <= 0.0f)
+			if (timerPassed == false && autoMoveTimer < 0.0f)
 			{
+				Debug.Log("Moving forward");
 				TileBase savedTile = null;
 				if (tilesQueue.Count > 0)
 				{
 					savedTile = tilesQueue[0];
-                }
+				}
 				tilesQueue.Clear();
 				QueueTile(savedTile);
-				MoveDirection("NORTH");
-				autoMoveTimer = Parameters.Instance.autoMoveDelay;
+				autoMoveTile = MoveDirection("NORTH", true);
 			}
 		}
+	}
+
+	public void UpdateAutoMoveVisual()
+	{
+		float angle = 360.0f / Parameters.Instance.autoMoveDelay * Mathf.Max(autoMoveTimer, 0.0f);
+
+		automoveVisual.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+	}
+
+	public void ForceAutoMove()
+	{
+		autoMoveTimer = 0.0f;
 	}
 
 	public void FindBestGhost()
@@ -383,7 +406,14 @@ public class TilePlayer : MonoBehaviour
 
 	bool CheckDeath()
 	{
-		return transform.position.y < TileManager.Instance.KillHeight();
+		if (Parameters.Instance.autoMove)
+		{
+			return false;
+		}
+		else
+		{
+			return transform.position.y < TileManager.Instance.KillHeight();
+		}
 	}
 
 	bool AllowedDirection(DIRECTIONS dir)
