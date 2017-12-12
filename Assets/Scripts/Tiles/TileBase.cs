@@ -12,7 +12,14 @@ public enum DIRECTIONS
 	NORTH_WEST,
 	SOUTH_EAST,
 	SOUTH_WEST,
-};
+}
+
+public enum TILE_TYPE
+{
+	NORMAL,
+	OBSTACLE,
+	POINT
+}
 
 public class TileBase : MonoBehaviour
 {

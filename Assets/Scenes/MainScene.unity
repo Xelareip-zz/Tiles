@@ -619,6 +619,7 @@ MonoBehaviour:
   difficulty: 0
   autoMoveTimer: 0
   automoveVisual: {fileID: 2091907530}
+  autoMoveTile: {fileID: 0}
 --- !u!58 &514927444
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2004,7 +2005,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2096670074}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.125, z: -1}
+  m_LocalPosition: {x: 0, y: 0.25, z: -1}
   m_LocalScale: {x: 0.1, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 2091907531}
