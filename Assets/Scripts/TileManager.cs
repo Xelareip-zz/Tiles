@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class TileManager : MonoBehaviour
@@ -22,12 +21,46 @@ public class TileManager : MonoBehaviour
 	public float spawnLimit;
 	public float lineOffset;
 
+	public WavesData data;
+
+	public WaveData currentWave;
+	public int currentLine;
+
 	public GameObject killLine;
+
+
+
+	public Dictionary<TILE_TYPE, string> tileNames = new Dictionary<TILE_TYPE, string>()
+	{
+		{ TILE_TYPE.NORMAL, "TileDefault" },
+		{ TILE_TYPE.OBSTACLE, "TileDeath" },
+		{ TILE_TYPE.POINT, "TilePoint" }
+	};
+
+	public Dictionary<TILE_TYPE, GameObject> tileToPrefab;
 
 	void Awake()
 	{
 		instance = this;
 		TileLine.lineCount = 0;
+
+		tileToPrefab = new Dictionary<TILE_TYPE, GameObject>();
+		foreach (TILE_TYPE tileType in System.Enum.GetValues(typeof(TILE_TYPE)))
+		{
+			if (tileNames.ContainsKey(tileType))
+			{
+				tileToPrefab.Add(tileType, possibleTiles[0]);
+
+				for (int prefabIdx = 0; prefabIdx < possibleTiles.Count; ++prefabIdx)
+				{
+					if (possibleTiles[prefabIdx].name == tileNames[tileType])
+					{
+						tileToPrefab[tileType] = possibleTiles[prefabIdx];
+                    }
+				}
+            }
+		}
+		FindWave();
 	}
 
 	void Start()
@@ -77,6 +110,12 @@ public class TileManager : MonoBehaviour
 		TilePlayer.Instance.transform.position = new Vector3(TilePlayer.Instance.currentTile.transform.position.x, TilePlayer.Instance.currentTile.transform.position.y, TilePlayer.Instance.transform.position.z);
     }
 
+	public void FindWave()
+	{
+		currentLine = 0;
+		currentWave = data.wavesList[Random.Range(0, data.wavesList.Count)];
+	}
+
 	public float GetWidth()
 	{
 		return Parameters.Instance.width * Parameters.Instance.spaceSize;
@@ -118,7 +157,21 @@ public class TileManager : MonoBehaviour
 			TileLine newLine = newLineObj.GetComponent<TileLine>();
 			tileLines[tileLines.Count - 1].nextLine = newLine;
 			newLine.previousLine = tileLines[tileLines.Count - 1];
-			newLine.SpawnTiles();
+			if (TileLine.lineCount > 5 && currentWave != null)
+			{
+				List<TILE_TYPE> tiles = currentWave.GetTiles(currentLine);
+				if (tiles == null)
+				{
+					FindWave();
+					tiles = currentWave.GetTiles(currentLine);
+				}
+				newLine.SpawnTiles(tiles);
+				++currentLine;
+			}
+			else
+			{
+				newLine.SpawnTiles();
+			}
             tileLines.Add(newLine);
 		}
 	}

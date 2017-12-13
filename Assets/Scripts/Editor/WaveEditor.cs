@@ -106,7 +106,14 @@ public class WaveEditor : Editor
 		EditorGUILayout.EndHorizontal();
 		for (int waveIdx = 0; waveIdx < data.wavesList.Count; ++waveIdx)
 		{
+			EditorGUILayout.BeginHorizontal();
 			bool foldout = EditorGUILayout.Foldout(waveIdx == foldoutId, "Wave " + waveIdx);
+			if (GUILayout.Button("X"))
+			{
+				data.wavesList.RemoveAt(waveIdx);
+				return;
+			}
+			EditorGUILayout.EndHorizontal();
 			if (foldout)
 			{
 				foldoutId = waveIdx;
