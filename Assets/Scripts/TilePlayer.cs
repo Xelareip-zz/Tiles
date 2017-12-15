@@ -4,14 +4,7 @@ using UnityEngine;
 
 public class TilePlayer : MonoBehaviour
 {
-	private static TilePlayer instance;
-	public static TilePlayer Instance
-	{
-		get
-		{
-			return instance;
-		}
-	}
+	public static TilePlayer Instance { get; private set; }
 
 	public GameObject endGame;
 	public CameraMove cameraMove;
@@ -36,20 +29,22 @@ public class TilePlayer : MonoBehaviour
 	public GameObject automoveVisual;
 	public TileBase autoMoveTile;
 
-	public bool TileReached()
+	private bool TileReached()
 	{
 		if (tilesQueue.Count > 0)
 		{
+			// ReSharper disable CompareOfFloatsByEqualityOperator
 			return transform.position.x == tilesQueue[0].transform.position.x && transform.position.y == tilesQueue[0].transform.position.y;
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 		return true;
     }
 
-	void Awake()
+	private void Awake()
 	{
 		loopGhosts[0].transform.position = transform.position + Vector3.left * TileManager.Instance.GetWidth();
 		loopGhosts[1].transform.position = transform.position + Vector3.right * TileManager.Instance.GetWidth();
-		instance = this;
+		Instance = this;
 		speed = Parameters.Instance.playerSpeed;
 		if (Parameters.Instance.inputQueueSize < 0)
 		{
@@ -68,12 +63,12 @@ public class TilePlayer : MonoBehaviour
 		}
 	}
 
-	void Start()
+	private void Start()
 	{
 		SwipeManager.Instance.Swiped += OnSwipe;
 	}
 
-	void OnDestroy()
+	private void OnDestroy()
 	{
 		SwipeManager.Instance.Swiped -= OnSwipe;
 	}
@@ -244,13 +239,13 @@ public class TilePlayer : MonoBehaviour
 			TileLine currentLine = TileManager.Instance.tileLines[lineIdx];
 			for (int tileIdx = 0; tileIdx < currentLine.tiles.Count; ++tileIdx)
 			{
-				TileBase currentTile = currentLine.tiles[tileIdx];
+				TileBase loopTile = currentLine.tiles[tileIdx];
 
-				float dist = Vector3.Distance(currentTile.transform.position, transform.position);
+				float dist = Vector3.Distance(loopTile.transform.position, transform.position);
 				if (dist < minDist)
 				{
 					minDist = dist;
-					closestTile = currentTile;
+					closestTile = loopTile;
 				}
 			}
 		}
@@ -258,7 +253,7 @@ public class TilePlayer : MonoBehaviour
 		currentTile = closestTile;
 	}
 
-	void CheckKeyboard()
+	private void CheckKeyboard()
 	{
 		if (Input.GetKeyDown(KeyCode.LeftArrow))
 		{
@@ -274,7 +269,7 @@ public class TilePlayer : MonoBehaviour
 		}
 	}
 
-	void Update ()
+	private void Update ()
 	{
 		if (CheckDeath())
 		{
@@ -404,7 +399,7 @@ public class TilePlayer : MonoBehaviour
 		Destroy(gameObject);
 	}
 
-	bool CheckDeath()
+	private bool CheckDeath()
 	{
 		if (Parameters.Instance.autoMove)
 		{
@@ -416,7 +411,7 @@ public class TilePlayer : MonoBehaviour
 		}
 	}
 
-	bool AllowedDirection(DIRECTIONS dir)
+	private bool AllowedDirection(DIRECTIONS dir)
 	{
 		switch(dir)
 		{
@@ -459,8 +454,8 @@ public class TilePlayer : MonoBehaviour
 			}
 		}
 	}
-	
-	void ActivateClickableTiles()
+
+	private void ActivateClickableTiles()
 	{
 		clickableTiles.Clear();
 
@@ -496,44 +491,47 @@ public class TilePlayer : MonoBehaviour
 		return clickableTiles.Contains(tile);
 	}
 
-	void OnTriggerEnter2D(Collider2D coll)
+	private void OnTriggerEnter2D(Collider2D coll)
 	{
-		if (coll.tag == "Wall")
+		if (!coll.CompareTag("Wall"))
 		{
-			endGame.SetActive(true);
-			Destroy(gameObject);
+			return;
 		}
+		endGame.SetActive(true);
+		Destroy(gameObject);
 	}
 
-	bool GoToTile()
+	private bool GoToTile()
 	{
-		if (TileReached() == false)
+		if (TileReached())
 		{
-			Vector3 targetMove = tilesQueue[0].transform.position - transform.position;
-
-			targetMove.z = 0;
-
-			if (targetMove.magnitude < GetSpeed() * Time.deltaTime)
-			{
-				transform.position = new Vector3(tilesQueue[0].transform.position.x, tilesQueue[0].transform.position.y, transform.position.z);
-				return true;
-			}
-
-			transform.position += targetMove.normalized * GetSpeed() * Time.deltaTime;
+			return false;
 		}
+		Vector3 targetMove = tilesQueue[0].transform.position - transform.position;
+
+		targetMove.z = 0;
+
+		if (targetMove.magnitude < GetSpeed() * Time.deltaTime)
+		{
+			transform.position = new Vector3(tilesQueue[0].transform.position.x, tilesQueue[0].transform.position.y, transform.position.z);
+			return true;
+		}
+
+		transform.position += targetMove.normalized * GetSpeed() * Time.deltaTime;
 		return false;
 	}
 
-	void OnDrawGizmos()
+	private void OnDrawGizmos()
 	{
-		if (tilesQueue.Count > 0)
+		if (tilesQueue.Count <= 0)
 		{
-			Gizmos.DrawLine(transform.position, tilesQueue[0].transform.position);
+			return;
+		}
+		Gizmos.DrawLine(transform.position, tilesQueue[0].transform.position);
 
-			for (int i = 0; i < tilesQueue.Count - 1; ++i)
-			{
-				Gizmos.DrawLine(tilesQueue[i].transform.position, tilesQueue[i + 1].transform.position);
-			}
-        }
+		for (int i = 0; i < tilesQueue.Count - 1; ++i)
+		{
+			Gizmos.DrawLine(tilesQueue[i].transform.position, tilesQueue[i + 1].transform.position);
+		}
 	}
 }

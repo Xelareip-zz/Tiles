@@ -1,61 +1,67 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
+using UnityEngine;
 
-public class TriggerSignal : MonoBehaviour
+namespace Common.Scripts
 {
-	public event Action<TriggerSignal, Collider> collisionStay;
-	public event Action<Collider> collisionEnter;
-	public event Action<Collider> collisionExit;
-
-	public event Action<TriggerSignal, Collider2D> collisionStay2D;
-	public event Action<Collider2D> collisionEnter2D;
-	public event Action<Collider2D> collisionExit2D;
-
-	void OnTriggerEnter(Collider coll)
+	public class TriggerSignal : MonoBehaviour
 	{
-		if (collisionEnter != null)
+		
+		// ReSharper disable EventNeverSubscribedTo.Global
+		public event Action<TriggerSignal, Collider> collisionStay;
+		public event Action<Collider> collisionEnter;
+		public event Action<Collider> collisionExit;
+
+		public event Action<TriggerSignal, Collider2D> collisionStay2D;
+		public event Action<Collider2D> collisionEnter2D;
+		public event Action<Collider2D> collisionExit2D;
+		// ReSharper restore EventNeverSubscribedTo.Global
+
+		private void OnTriggerEnter(Collider coll)
 		{
-			collisionEnter(coll);
+			if (collisionEnter != null)
+			{
+				collisionEnter(coll);
+			}
 		}
-	}
 
-	void OnTriggerStay(Collider coll)
-	{
-		if (collisionStay != null)
+		private void OnTriggerStay(Collider coll)
 		{
-			collisionStay(this, coll);
+			if (collisionStay != null)
+			{
+				collisionStay(this, coll);
+			}
 		}
-	}
 
-	void OnTriggerExit(Collider coll)
-	{
-		if (collisionExit != null)
+		private void OnTriggerExit(Collider coll)
 		{
-			collisionExit(coll);
+			if (collisionExit != null)
+			{
+				collisionExit(coll);
+			}
 		}
-	}
 
-	void OnTriggerEnter2D(Collider2D coll)
-	{
-		if (collisionEnter2D != null)
+		private void OnTriggerEnter2D(Collider2D coll)
 		{
-			collisionEnter2D(coll);
+			if (collisionEnter2D != null)
+			{
+				collisionEnter2D(coll);
+			}
 		}
-	}
 
-	void OnTriggerStay2D(Collider2D coll)
-	{
-		if (collisionStay2D != null)
+		private void OnTriggerStay2D(Collider2D coll)
 		{
-			collisionStay2D(this, coll);
+			if (collisionStay2D != null)
+			{
+				collisionStay2D(this, coll);
+			}
 		}
-	}
 
-	void OnTriggerExit2D(Collider2D coll)
-	{
-		if (collisionExit2D != null)
+		private void OnTriggerExit2D(Collider2D coll)
 		{
-			collisionExit2D(coll);
+			if (collisionExit2D != null)
+			{
+				collisionExit2D(coll);
+			}
 		}
 	}
 }
