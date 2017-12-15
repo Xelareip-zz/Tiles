@@ -40,7 +40,7 @@ public class SwipeManager : MonoBehaviour
 
 	void Start()
 	{
-		minDistance = Parameters.Instance.swipeSensibility;
+		minDistance = Parameters.Parameters.Instance.swipeSensibility;
 	}
 
 	bool HasInput()

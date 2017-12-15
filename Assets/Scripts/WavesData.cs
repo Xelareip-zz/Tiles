@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,7 +26,7 @@ public class WaveData
 			TILE_TYPE type = TILE_TYPE.NORMAL;
 			if (tileId < tileStringsTab.Length && string.IsNullOrEmpty(tileStringsTab[tileId]) == false)
 			{
-				type = (TILE_TYPE)System.Enum.Parse(typeof(TILE_TYPE), tileStringsTab[tileId]);
+				type = (TILE_TYPE)Enum.Parse(typeof(TILE_TYPE), tileStringsTab[tileId]);
 			}
 
 			res.Add(type);
@@ -42,5 +41,4 @@ public class WavesData : ScriptableObject
 {
 	[SerializeField]
 	public List<WaveData> wavesList;
-
 }

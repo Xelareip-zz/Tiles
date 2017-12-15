@@ -33,6 +33,7 @@ namespace Editor
 		private float _height;
 		private float _maxHeight;
 		private int _foldoutId;
+		private int _dataWidth;
 
 		private void OnEnable()
 		{
@@ -44,7 +45,9 @@ namespace Editor
 			if (_data.wavesList == null)
 			{
 				_data.wavesList = new List<WaveData>();
+				_data.wavesList.Add(new WaveData());
 			}
+			_dataWidth = _data.wavesList[0].width;
 		}
 
 		private static void SetDescriptions()
@@ -102,6 +105,10 @@ namespace Editor
 			}
 			
 			NewLine();
+			GUI.Label(MakeRect(100, 17), "Width");
+			_dataWidth = Mathf.Clamp(EditorGUI.IntField(MakeRect(200, 17, true), _dataWidth), 2, 10);
+			
+			NewLine();
 			
 			if (GUI.Button(MakeRect(200, 17), "Add wave"))
 			{
@@ -135,16 +142,13 @@ namespace Editor
 				}
 				_foldoutId = waveIdx;
 				WaveData wave = _data.wavesList[waveIdx];
-				MakeRect(20, 17);
-				wave.width = Mathf.Clamp(EditorGUI.IntField(MakeRect(200, 17, true), wave.width), 2, 10);
-				for (int lineIdx = 0; lineIdx < wave.lines.Count; ++lineIdx)
+				wave.width = _dataWidth;
+				for (int lineIdx = wave.lines.Count - 1; lineIdx >= 0; --lineIdx)
 				{
 					MakeRect(20, 17);
 					string[] tileStringsTab = wave.lines[lineIdx].Split('-');
 
 					List<string> tileStrings = new List<string>();
-
-
 
 					for (int tileId = 0; tileId < wave.width; ++tileId)
 					{

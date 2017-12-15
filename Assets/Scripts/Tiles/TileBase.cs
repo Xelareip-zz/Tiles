@@ -69,7 +69,7 @@ public class TileBase : MonoBehaviour
 	{
 		clickableObj.SetActive(TilePlayer.Instance.IsTileCickable(this));
 
-		if (Parameters.Instance.swipeControl == false)
+		if (Parameters.Parameters.Instance.swipeControl == false)
 		{
 			if (TilePlayer.Instance.IsTileCickable(this))
 			{

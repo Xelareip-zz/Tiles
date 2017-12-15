@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
+[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 public class TilePlayer : MonoBehaviour
 {
 	public static TilePlayer Instance { get; private set; }
@@ -42,25 +44,13 @@ public class TilePlayer : MonoBehaviour
 
 	private void Awake()
 	{
-		loopGhosts[0].transform.position = transform.position + Vector3.left * TileManager.Instance.GetWidth();
-		loopGhosts[1].transform.position = transform.position + Vector3.right * TileManager.Instance.GetWidth();
 		Instance = this;
-		speed = Parameters.Instance.playerSpeed;
-		if (Parameters.Instance.inputQueueSize < 0)
-		{
-			inputQueueSize = int.MaxValue;
-		}
-		else
-		{
-			inputQueueSize = Parameters.Instance.inputQueueSize;
-		}
+		speed = Parameters.Parameters.Instance.playerSpeed;
+		inputQueueSize = Parameters.Parameters.Instance.inputQueueSize < 0 ? int.MaxValue : Parameters.Parameters.Instance.inputQueueSize;
 		maxDistance = 0;
 		difficulty = 0;
-		autoMoveTimer = Parameters.Instance.autoMoveDelay;
-		if (Parameters.Instance.autoMove)
-		{
-			cameraMove.followPlayer = true;
-		}
+		autoMoveTimer = Parameters.Parameters.Instance.autoMoveDelay;
+		cameraMove.followPlayer = true;
 	}
 
 	private void Start()
@@ -73,75 +63,62 @@ public class TilePlayer : MonoBehaviour
 		SwipeManager.Instance.Swiped -= OnSwipe;
 	}
 
-	public float GetSpeed()
+	private float GetSpeed()
 	{
-		return speed * (difficulty * Parameters.Instance.difficultyIncrease / 100.0f + 1.0f);
+		return speed * (difficulty * Parameters.Parameters.Instance.difficultyIncrease / 100.0f + 1.0f);
 	}
 
-	public float GetCameraSpeed()
+	private float GetCameraSpeed()
 	{
-		return Parameters.Instance.cameraSpeed * (difficulty * Parameters.Instance.difficultyIncrease / 100.0f + 1.0f);
+		return Parameters.Parameters.Instance.cameraSpeed * (difficulty * Parameters.Parameters.Instance.difficultyIncrease / 100.0f + 1.0f);
 	}
 
-	public TileBase GetRootTile()
+	private TileBase GetRootTile()
 	{
-		if (tilesQueue.Count > 0)
+		return tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : currentTile;
+	}
+
+	private void OnSwipe(float angle)
+	{
+		if (!Parameters.Parameters.Instance.swipeControl)
 		{
-			return tilesQueue[tilesQueue.Count - 1];
+			return;
 		}
-		else
+		TileBase rootTile = GetRootTile();
+		float bestDot = float.MinValue;
+		TileBase bestTarget = null;
+		for (int targetIdx = 0; targetIdx < clickableTiles.Count; ++targetIdx)
 		{
-			return currentTile;
-		}
-	}
-
-	public void OnSwipe(float angle)
-	{
-		if (Parameters.Instance.swipeControl)
-		{
-			TileBase rootTile = GetRootTile();
-			float bestDot = float.MinValue;
-			TileBase bestTarget = null;
-			for (int targetIdx = 0; targetIdx < clickableTiles.Count; ++targetIdx)
+			TileBase potentialTarget = clickableTiles[targetIdx];
+			if (potentialTarget == null)
 			{
-				TileBase potentialTarget = clickableTiles[targetIdx];
-				if (potentialTarget == null)
-				{
-					continue;
-				}
-
-				float neighborAngle = rootTile.NeighborToAngle(potentialTarget);
-				float dot = Vector3.Dot(Quaternion.AngleAxis(neighborAngle, Vector3.forward) * Vector3.up, Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up);
-
-				if (dot > bestDot)
-				{
-					bestDot = dot;
-					bestTarget = potentialTarget;
-				}
+				continue;
 			}
 
-			if (bestTarget != null)
+			float neighborAngle = rootTile.NeighborToAngle(potentialTarget);
+			float dot = Vector3.Dot(Quaternion.AngleAxis(neighborAngle, Vector3.forward) * Vector3.up, Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up);
+
+			if (dot > bestDot)
 			{
-				QueueTile(bestTarget);
+				bestDot = dot;
+				bestTarget = potentialTarget;
 			}
+		}
+
+		if (bestTarget != null)
+		{
+			QueueTile(bestTarget);
 		}
 	}
 
-	public void MoveLeft()
+	private void MoveLeft()
 	{
-		TileBase rootTile;
 		if (tilesQueue.Count > inputQueueSize - 1)
 		{
 			return;
 		}
-		else if (tilesQueue.Count > 0)
-		{
-			rootTile = tilesQueue[tilesQueue.Count - 1];
-		}
-		else
-		{
-			rootTile = currentTile;
-		}
+		TileBase rootTile = tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : currentTile;
+		
 		if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.NORTH_WEST]))
 		{
 			QueueTile(rootTile.neighbors[(int)DIRECTIONS.NORTH_WEST]);
@@ -156,46 +133,14 @@ public class TilePlayer : MonoBehaviour
 		}
 	}
 
-	public void MoveNorth()
+	private void MoveRight()
 	{
-		TileBase rootTile;
 		if (tilesQueue.Count > inputQueueSize - 1)
 		{
 			return;
 		}
-		else if (tilesQueue.Count > 0)
-		{
-			rootTile = tilesQueue[tilesQueue.Count - 1];
-		}
-		else
-		{
-			rootTile = currentTile;
-		}
-		if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.NORTH]))
-		{
-			QueueTile(rootTile.neighbors[(int)DIRECTIONS.NORTH]);
-		}
-		else if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.SOUTH]))
-		{
-			QueueTile(rootTile.neighbors[(int)DIRECTIONS.SOUTH]);
-		}
-	}
-
-	public void MoveRight()
-	{
-		TileBase rootTile;
-		if (tilesQueue.Count > inputQueueSize - 1)
-		{
-			return;
-		}
-		else if (tilesQueue.Count > 0)
-		{
-			rootTile = tilesQueue[tilesQueue.Count - 1];
-		}
-		else
-		{
-			rootTile = currentTile;
-		}
+		TileBase rootTile = tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : currentTile;
+		
 		if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.NORTH_EAST]))
 		{
 			QueueTile(rootTile.neighbors[(int)DIRECTIONS.NORTH_EAST]);
@@ -210,7 +155,7 @@ public class TilePlayer : MonoBehaviour
 		}
 	}
 
-	public TileBase MoveDirection(string dir, bool force = false)
+	private TileBase MoveDirection(string dir, bool force = false)
 	{
 		DIRECTIONS direction = (DIRECTIONS)Enum.Parse(typeof(DIRECTIONS), dir);
 		TileBase rootTile = GetRootTile();
@@ -219,15 +164,16 @@ public class TilePlayer : MonoBehaviour
 			return null;
 		}
 		TileBase target = rootTile.neighbors[(int)direction];
-        if (target != null)
+		if (target == null)
 		{
-			if (force || clickableTiles.Contains(target))
-			{
-				QueueTile(target);
-				return target;
-			}
+			return null;
 		}
-		return null;
+		if (!force && !clickableTiles.Contains(target))
+		{
+			return null;
+		}
+		QueueTile(target);
+		return target;
 	}
 
 	public void FindTile()
@@ -242,6 +188,7 @@ public class TilePlayer : MonoBehaviour
 				TileBase loopTile = currentLine.tiles[tileIdx];
 
 				float dist = Vector3.Distance(loopTile.transform.position, transform.position);
+				// ReSharper disable once InvertIf
 				if (dist < minDist)
 				{
 					minDist = dist;
@@ -271,11 +218,11 @@ public class TilePlayer : MonoBehaviour
 
 	private void Update ()
 	{
-		if (CheckDeath())
-		{
-			EndGame();
-			return;
-		}
+		//if (CheckDeath())
+		//{
+		//	EndGame();
+		//	return;
+		//}
 		AutoMove();
 		UpdateAutoMoveVisual();
 		cameraMove.speed = Vector3.up * GetCameraSpeed();
@@ -284,7 +231,7 @@ public class TilePlayer : MonoBehaviour
 		if (GoToTile())
 		{
 			int lineNumber = tilesQueue[0].parentLine.lineNumber;
-            if (Parameters.Instance.pointsPerLine && lineNumber > maxDistance)
+            if (Parameters.Parameters.Instance.pointsPerLine && lineNumber > maxDistance)
 			{
 				ScoreManager.Instance.score += lineNumber - maxDistance;
 				maxDistance = lineNumber;
@@ -293,7 +240,7 @@ public class TilePlayer : MonoBehaviour
 			if (autoMoveTile == tilesQueue[0])
 			{
 				autoMoveTile = null;
-				autoMoveTimer = Parameters.Instance.autoMoveDelay;
+				autoMoveTimer = Parameters.Parameters.Instance.autoMoveDelay;
 			}
 			tilesQueue[0].TileReached();
 			currentTile = tilesQueue[0];
@@ -310,67 +257,76 @@ public class TilePlayer : MonoBehaviour
 
 		ActivateClickableTiles();
 		DrawPath();
+		AdaptGhosts();
 	}
 
-
-	public void AutoMove()
+	private void AdaptGhosts()
 	{
-		if (Parameters.Instance.autoMove)
+		loopGhosts[0].transform.position = transform.position + Vector3.left * TileManager.GetWidth();
+		loopGhosts[1].transform.position = transform.position + Vector3.right * TileManager.GetWidth();
+	}
+	
+	private void AutoMove()
+	{
+		//if (!Parameters.Parameters.Instance.autoMove)
+		//{
+		//	return;
+		//}
+		bool timerPassed = autoMoveTimer < 0.0f;
+		autoMoveTimer -= Time.deltaTime;
+
+		if (timerPassed || !(autoMoveTimer < 0.0f))
 		{
-			bool timerPassed = autoMoveTimer < 0.0f;
-			autoMoveTimer -= Time.deltaTime;
-
-			if (timerPassed == false && autoMoveTimer < 0.0f)
-			{
-				Debug.Log("Moving forward");
-				TileBase savedTile = null;
-				if (tilesQueue.Count > 0)
-				{
-					savedTile = tilesQueue[0];
-				}
-				tilesQueue.Clear();
-				QueueTile(savedTile);
-				autoMoveTile = MoveDirection("NORTH", true);
-			}
+			return;
 		}
+		TileBase savedTile = null;
+		if (tilesQueue.Count > 0)
+		{
+			savedTile = tilesQueue[0];
+		}
+		tilesQueue.Clear();
+		QueueTile(savedTile);
+		autoMoveTile = MoveDirection("NORTH", true);
 	}
 
-	public void UpdateAutoMoveVisual()
+	private void UpdateAutoMoveVisual()
 	{
-		float angle = 360.0f / Parameters.Instance.autoMoveDelay * Mathf.Max(autoMoveTimer, 0.0f);
+		float angle = 360.0f / Parameters.Parameters.Instance.autoMoveDelay * Mathf.Max(autoMoveTimer, 0.0f);
 
 		automoveVisual.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 	}
 
-	public void ForceAutoMove()
+	private void ForceAutoMove()
 	{
 		autoMoveTimer = 0.0f;
 	}
 
-	public void FindBestGhost()
+	private void FindBestGhost()
 	{
-		if (tilesQueue.Count > 0)
+		if (tilesQueue.Count <= 0)
 		{
-			float bestDist = Vector3.Distance(transform.position, tilesQueue[0].transform.position);
-			Vector3 bestPos = transform.position;
-			for (int ghostId = 0; ghostId < loopGhosts.Count; ++ghostId)
-			{
-				float dist = Vector3.Distance(loopGhosts[ghostId].transform.position, tilesQueue[0].transform.position);
-
-				if (dist < bestDist)
-				{
-					bestDist = dist;
-					bestPos = loopGhosts[ghostId].transform.position;
-				}
-			}
-
-			transform.position = bestPos;
+			return;
 		}
+		float bestDist = Vector3.Distance(transform.position, tilesQueue[0].transform.position);
+		Vector3 bestPos = transform.position;
+		for (int ghostId = 0; ghostId < loopGhosts.Count; ++ghostId)
+		{
+			float dist = Vector3.Distance(loopGhosts[ghostId].transform.position, tilesQueue[0].transform.position);
+
+			// ReSharper disable once InvertIf
+			if (dist < bestDist)
+			{
+				bestDist = dist;
+				bestPos = loopGhosts[ghostId].transform.position;
+			}
+		}
+
+		transform.position = bestPos;
 	}
 
-	public void DrawPath()
+	private void DrawPath()
 	{
-		if (Parameters.Instance.drawPath == false)
+		if (Parameters.Parameters.Instance.drawPath == false)
 		{
 			return;
 		}
@@ -399,40 +355,39 @@ public class TilePlayer : MonoBehaviour
 		Destroy(gameObject);
 	}
 
-	private bool CheckDeath()
-	{
-		if (Parameters.Instance.autoMove)
-		{
-			return false;
-		}
-		else
-		{
-			return transform.position.y < TileManager.Instance.KillHeight();
-		}
-	}
+	//private bool CheckDeath()
+	//{
+	//	
+	//	if (Parameters.Parameters.Instance.autoMove)
+	//	{
+	//		return false;
+	//	}
+	//	return transform.position.y < TileManager.Instance.KillHeight();
+	//}
 
-	private bool AllowedDirection(DIRECTIONS dir)
+	private static bool AllowedDirection(DIRECTIONS dir)
 	{
 		switch(dir)
 		{
 			case DIRECTIONS.NORTH:
-				return Parameters.Instance.moveNorth;
+				return Parameters.Parameters.Instance.moveNorth;
 			case DIRECTIONS.SOUTH:
-				return Parameters.Instance.moveSouth;
+				return Parameters.Parameters.Instance.moveSouth;
 			case DIRECTIONS.EAST:
-				return Parameters.Instance.moveEast;
+				return Parameters.Parameters.Instance.moveEast;
 			case DIRECTIONS.WEST:
-				return Parameters.Instance.moveWest;
+				return Parameters.Parameters.Instance.moveWest;
 			case DIRECTIONS.NORTH_EAST:
-				return Parameters.Instance.moveNorthEast;
+				return Parameters.Parameters.Instance.moveNorthEast;
 			case DIRECTIONS.NORTH_WEST:
-				return Parameters.Instance.moveNorthWest;
+				return Parameters.Parameters.Instance.moveNorthWest;
 			case DIRECTIONS.SOUTH_EAST:
-				return Parameters.Instance.moveSouthEast;
+				return Parameters.Parameters.Instance.moveSouthEast;
 			case DIRECTIONS.SOUTH_WEST:
-				return Parameters.Instance.moveSouthWest;
+				return Parameters.Parameters.Instance.moveSouthWest;
+			default:
+				throw new ArgumentOutOfRangeException("dir", dir, null);
 		}
-		return false;
 	}
 
 	public void QueueTile(TileBase tile)
@@ -441,17 +396,18 @@ public class TilePlayer : MonoBehaviour
 		{
 			return;
 		}
-		if (tilesQueue.Count < inputQueueSize)
+		if (tilesQueue.Count >= inputQueueSize)
 		{
-			tilesQueue.Add(tile);
-			if (tilesQueue.Count == 1)
-			{
-				FindBestGhost();
-			}
-			if (tilesQueue.Count == 1)
-			{
-				currentTile.TileLeft();
-			}
+			return;
+		}
+		tilesQueue.Add(tile);
+		if (tilesQueue.Count == 1)
+		{
+			FindBestGhost();
+		}
+		if (tilesQueue.Count == 1)
+		{
+			currentTile.TileLeft();
 		}
 	}
 
@@ -459,29 +415,23 @@ public class TilePlayer : MonoBehaviour
 	{
 		clickableTiles.Clear();
 
-		TileBase rootTile;
 		if (tilesQueue.Count > inputQueueSize - 1)
 		{
 			return;
 		}
-		else if (tilesQueue.Count > 0)
-		{
-			rootTile = tilesQueue[tilesQueue.Count - 1];
-		}
-		else
-		{
-			rootTile = currentTile;
-		}
+		TileBase rootTile = tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : currentTile;
 
-		if (currentTile != null)
+		if (currentTile == null)
 		{
-			for (int i = 0; i < rootTile.neighbors.Length; ++i)
+			return;
+		}
+		for (int i = 0; i < rootTile.neighbors.Length; ++i)
+		{
+			// ReSharper disable once InvertIf
+			if (AllowedDirection((DIRECTIONS) i))
 			{
-				if (AllowedDirection((DIRECTIONS) i))
-				{
-					TileBase neighbor = rootTile.neighbors[i];
-					clickableTiles.Add(neighbor);
-				}
+				TileBase neighbor = rootTile.neighbors[i];
+				clickableTiles.Add(neighbor);
 			}
 		}
 	}

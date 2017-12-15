@@ -301,7 +301,7 @@ public class ParametersDisplay : MonoBehaviour
 			ParameterEditor.holder = uiHolder;
 		}
 		GetTarget();
-		FieldInfo[] infos = typeof(Parameters).GetFields();
+		FieldInfo[] infos = typeof(Parameters.Parameters).GetFields();
 		foreach (FieldInfo info in infos)
 		{
 			object[] attrs = info.GetCustomAttributes(true);

@@ -9,10 +9,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb1c6819da7e0144da6ee9fec388e270, type: 3}
-  m_Name: WavesData
+  m_Name: WavesBasic5
   m_EditorClassIdentifier: 
   wavesList:
-  - width: 2
-    lines: []
-  - width: 2
-    lines: []
+  - width: 5
+    lines:
+    - NORMAL-NORMAL-NORMAL-NORMAL-NORMAL
+    - POINT-POINT-OBSTACLE-NORMAL-NORMAL
+    - OBSTACLE-POINT-OBSTACLE-NORMAL-NORMAL
+    - POINT-OBSTACLE-POINT-OBSTACLE-NORMAL
+    - NORMAL-OBSTACLE-NORMAL-NORMAL-NORMAL

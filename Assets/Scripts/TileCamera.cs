@@ -1,24 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TileCamera : MonoBehaviour
 {
-	private static TileCamera instance;
-	public static TileCamera Instance
+	public static TileCamera Instance { get; private set; }
+
+	public new Camera camera;
+
+	private void Awake()
 	{
-		get
-		{
-			return instance;
-		}
+		Instance = this;
 	}
 
-	new public Camera camera;
-
-	void Awake()
+	private void Update()
 	{
-		instance = this;
-		float camWidth = Parameters.Instance.width * Parameters.Instance.spaceSize / 2.0f;
-        camera.orthographicSize = camWidth / Screen.width * Screen.height;
+		float camWidth = TileLine.lineWidth * Parameters.Parameters.Instance.spaceSize / 2.0f;
+		camera.orthographicSize = camWidth / Screen.width * Screen.height;
 	}
 }

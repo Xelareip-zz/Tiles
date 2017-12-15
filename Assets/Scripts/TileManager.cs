@@ -1,142 +1,161 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public enum WAVES_LIST
+{
+	BASIC,
+	BASIC_5
+}
+
+[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 public class TileManager : MonoBehaviour
 {
-	private static TileManager instance;
-	public static TileManager Instance
+	private static readonly Dictionary<TILE_TYPE, string> TileNames = new Dictionary<TILE_TYPE, string>
 	{
-		get
-		{
-			return instance;
-		}
-	}
+		{ TILE_TYPE.NORMAL, "TileDefault" },
+		{ TILE_TYPE.OBSTACLE, "TileDeath" },
+		{ TILE_TYPE.POINT, "TilePoint" }
+	};
+	
+	private static readonly Dictionary<WAVES_LIST, string> WavesNames = new Dictionary<WAVES_LIST, string>
+	{
+		{ WAVES_LIST.BASIC, "WavesBasic" },
+		{ WAVES_LIST.BASIC_5, "WavesBasic5" }
+	};
+	
+	public static TileManager Instance { get; private set; }
 
 	public List<GameObject> possibleLines;
 	public List<GameObject> possibleTiles;
 
 	public List<TileLine> tileLines = new List<TileLine>();
 
-	private float killLimit;
-	public float spawnLimit;
+	//private float _killLimit;
 	public float lineOffset;
 
+	public List<WavesData> dataList;
 	public WavesData data;
 
 	public WaveData currentWave;
 	public int currentLine;
 
-	public GameObject killLine;
-
-
-
-	public Dictionary<TILE_TYPE, string> tileNames = new Dictionary<TILE_TYPE, string>()
-	{
-		{ TILE_TYPE.NORMAL, "TileDefault" },
-		{ TILE_TYPE.OBSTACLE, "TileDeath" },
-		{ TILE_TYPE.POINT, "TilePoint" }
-	};
+	//public GameObject killLine;
 
 	public Dictionary<TILE_TYPE, GameObject> tileToPrefab;
 
-	void Awake()
+	private void Awake()
 	{
-		instance = this;
+		Instance = this;
 		TileLine.lineCount = 0;
 
 		tileToPrefab = new Dictionary<TILE_TYPE, GameObject>();
 		foreach (TILE_TYPE tileType in System.Enum.GetValues(typeof(TILE_TYPE)))
 		{
-			if (tileNames.ContainsKey(tileType))
+			if (!TileNames.ContainsKey(tileType))
 			{
-				tileToPrefab.Add(tileType, possibleTiles[0]);
+				continue;
+			}
+			tileToPrefab.Add(tileType, possibleTiles[0]);
 
-				for (int prefabIdx = 0; prefabIdx < possibleTiles.Count; ++prefabIdx)
+			for (int prefabIdx = 0; prefabIdx < possibleTiles.Count; ++prefabIdx)
+			{
+				if (possibleTiles[prefabIdx].name == TileNames[tileType])
 				{
-					if (possibleTiles[prefabIdx].name == tileNames[tileType])
-					{
-						tileToPrefab[tileType] = possibleTiles[prefabIdx];
-                    }
+					tileToPrefab[tileType] = possibleTiles[prefabIdx];
 				}
-            }
+			}
 		}
+
+		for (int dataIdx = 0; dataIdx < dataList.Count; ++dataIdx)
+		{
+			if (dataList[dataIdx].name != WavesNames[Parameters.Parameters.Instance.wavesStyle])
+			{
+				continue;
+			}
+			data = dataList[dataIdx];
+			break;
+		}
+		
 		FindWave();
 	}
 
-	void Start()
+	private void Start()
 	{
-		lineOffset = Parameters.Instance.spaceSize;
-		killLimit = (Parameters.Instance.deathHeight / 100.0f - 0.5f) * Camera.main.orthographicSize * 2.0f;
-		if (Parameters.Instance.mustTiles == false)
-		{
-			for (int i = 0; i < possibleTiles.Count; ++i)
-			{
-				if (possibleTiles[i].gameObject.name == "TileMust")
-				{
-					possibleTiles.RemoveAt(i);
-					break;
-				}
-			}
-
-		}
-		if (Parameters.Instance.fragileTiles == false)
-		{
-			for (int i = 0; i < possibleTiles.Count; ++i)
-			{
-				if (possibleTiles[i].gameObject.name == "TileFragile")
-				{
-					possibleTiles.RemoveAt(i);
-					break;
-				}
-			}
-
-		}
-		if (Parameters.Instance.autoMove)
-		{
-			Destroy(killLine);
-		}
-		else
-		{
-			killLine.transform.position = new Vector3(killLine.transform.position.x, transform.position.y + killLimit, killLine.transform.position.z);
-			killLine.transform.localScale = new Vector3(Parameters.Instance.width * Parameters.Instance.spaceSize * 2.0f, killLine.transform.localScale.y, killLine.transform.localScale.z);
-		}
+		lineOffset = Parameters.Parameters.Instance.spaceSize;
+		//_killLimit = (Parameters.Parameters.Instance.deathHeight / 100.0f - 0.5f) * Camera.main.orthographicSize * 2.0f;
+		//if (Parameters.Parameters.Instance.mustTiles == false)
+		//{
+		//	for (int i = 0; i < possibleTiles.Count; ++i)
+		//	{
+		//		if (possibleTiles[i].gameObject.name != "TileMust")
+		//		{
+		//			continue;
+		//		}
+		//		possibleTiles.RemoveAt(i);
+		//		break;
+		//	}
+//
+		//}
+		//if (Parameters.Parameters.Instance.fragileTiles == false)
+		//{
+		//	for (int i = 0; i < possibleTiles.Count; ++i)
+		//	{
+		//		if (possibleTiles[i].gameObject.name != "TileFragile")
+		//		{
+		//			continue;
+		//		}
+		//		possibleTiles.RemoveAt(i);
+		//		break;
+		//	}
+		//}
 		for (int lineIdx = 0; lineIdx < tileLines.Count; ++lineIdx)
 		{
-			tileLines[lineIdx].SpawnTiles();
+			tileLines[lineIdx].SpawnTiles(currentWave.width);
 		}
 		SpawnLines();
-
+		//if (Parameters.Parameters.Instance.autoMove)
+		//{
+		//	Destroy(killLine);
+		//}
+		//else
+		//{
+		//	killLine.transform.position = new Vector3(killLine.transform.position.x, transform.position.y + _killLimit, killLine.transform.position.z);
+		//	killLine.transform.localScale = new Vector3(TileLine.lineWidth * Parameters.Parameters.Instance.spaceSize * 2.0f, killLine.transform.localScale.y, killLine.transform.localScale.z);
+		//}
+		
 		TilePlayer.Instance.FindTile();
 		TilePlayer.Instance.transform.position = new Vector3(TilePlayer.Instance.currentTile.transform.position.x, TilePlayer.Instance.currentTile.transform.position.y, TilePlayer.Instance.transform.position.z);
     }
 
-	public void FindWave()
+	private void FindWave()
 	{
 		currentLine = 0;
 		currentWave = data.wavesList[Random.Range(0, data.wavesList.Count)];
 	}
 
-	public float GetWidth()
+	public static float GetWidth()
 	{
-		return Parameters.Instance.width * Parameters.Instance.spaceSize;
+		return TileLine.lineWidth * Parameters.Parameters.Instance.spaceSize;
 	}
 
-	void Update()
+	private void Update()
 	{
 		SpawnLines();
 		ClearTiles();
 	}
 
-	public float KillHeight()
-	{
-		return transform.position.y + killLimit;
-	}
+	//public float KillHeight()
+	//{
+	//	return transform.position.y + _killLimit;
+	//}
 
-	void ClearTiles()
+	private void ClearTiles()
 	{
 		for (int lineIdx = 0; lineIdx < tileLines.Count - 1; ++lineIdx)
 		{
-			if (tileLines[lineIdx].transform.position.y < transform.position.y + killLimit)
+			if (tileLines[lineIdx].transform.position.y < transform.position.y - TileCamera.Instance.camera.orthographicSize * 2.0f)
 			{
 				Destroy(tileLines[lineIdx].gameObject);
 				tileLines.RemoveAt(lineIdx);
@@ -149,15 +168,14 @@ public class TileManager : MonoBehaviour
 		}
 	}
 
-	void SpawnLines()
+	private void SpawnLines()
 	{
 		while (tileLines[tileLines.Count - 1].transform.position.y < transform.position.y + TileCamera.Instance.camera.orthographicSize)
 		{
 			GameObject newLineObj = Instantiate(possibleLines[0], tileLines[tileLines.Count - 1].transform.position + Vector3.up * lineOffset, Quaternion.identity);
 			TileLine newLine = newLineObj.GetComponent<TileLine>();
-			tileLines[tileLines.Count - 1].nextLine = newLine;
 			newLine.previousLine = tileLines[tileLines.Count - 1];
-			if (TileLine.lineCount > 5 && currentWave != null)
+			if (TileLine.lineCount > 5)
 			{
 				List<TILE_TYPE> tiles = currentWave.GetTiles(currentLine);
 				if (tiles == null)
@@ -170,7 +188,7 @@ public class TileManager : MonoBehaviour
 			}
 			else
 			{
-				newLine.SpawnTiles();
+				newLine.SpawnTiles(currentWave.width);
 			}
             tileLines.Add(newLine);
 		}

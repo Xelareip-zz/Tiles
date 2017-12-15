@@ -1,20 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraMove : MonoBehaviour
 {
 	public Vector3 speed;
 
-	public bool followPlayer = false;
+	public bool followPlayer;
 
 
-	void Awake()
+	private void Awake()
 	{
-		speed = Vector3.up * Parameters.Instance.cameraSpeed;
+		speed = Vector3.up * Parameters.Parameters.Instance.cameraSpeed;
     }
 
-	void Update()
+	private void Update()
 	{
 		if (followPlayer == false)
 		{
@@ -22,10 +20,12 @@ public class CameraMove : MonoBehaviour
 		}
 		else
 		{
-			if (TilePlayer.Instance != null)
+			if (TilePlayer.Instance == null)
 			{
-				transform.position += (TilePlayer.Instance.transform.position.y + Parameters.Instance.cameraOffset - transform.position.y) * Time.deltaTime * Vector3.up;
+				return;
 			}
+			float cameraOffset = TileCamera.Instance.camera.orthographicSize / 2.0f;
+			transform.position += (TilePlayer.Instance.transform.position.y + cameraOffset - transform.position.y) * Time.deltaTime * Vector3.up;
 		}
 	}
 }
