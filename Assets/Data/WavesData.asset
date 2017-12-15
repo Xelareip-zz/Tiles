@@ -12,9 +12,7 @@ MonoBehaviour:
   m_Name: WavesData
   m_EditorClassIdentifier: 
   wavesList:
-  - width: 4
-    lines:
-    - NORMAL-OBSTACLE-NORMAL-OBSTACLE
-    - NORMAL-NORMAL-NORMAL-NORMAL
-    - OBSTACLE-NORMAL-OBSTACLE-NORMAL
-    - NORMAL-NORMAL-NORMAL-NORMAL
+  - width: 2
+    lines: []
+  - width: 2
+    lines: []

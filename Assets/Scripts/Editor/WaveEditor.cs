@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Editor
 {
+	
 	public class TileDescription
 	{
 		public Texture2D image;
@@ -27,6 +28,10 @@ namespace Editor
 
 		private WavesData _data;
 
+
+		private float _width;
+		private float _height;
+		private float _maxHeight;
 		private int _foldoutId;
 
 		private void OnEnable()
@@ -44,102 +49,138 @@ namespace Editor
 
 		private static void SetDescriptions()
 		{
-			_tileDescriptions = new Dictionary<TILE_TYPE, TileDescription>()
+			_tileDescriptions = new Dictionary<TILE_TYPE, TileDescription>
 			{
 				{ TILE_TYPE.NORMAL, TileDescription.Build("Assets/Prefabs/TileDefault.prefab") },
 				{ TILE_TYPE.OBSTACLE, TileDescription.Build("Assets/Prefabs/TileDeath.prefab") },
 				{ TILE_TYPE.POINT, TileDescription.Build("Assets/Prefabs/TilePoint.prefab") }
 			};
+		}
 
+		private void NewLine()
+		{
+			_width = 3;
+			_height = _maxHeight;
+		}
+
+		private Rect MakeRect(float rectWidth, float rectHeight, bool newLine = false)
+		{
+			Rect res = new Rect(_width, _height, rectWidth, rectHeight);
+			_width += rectWidth + 3;
+			_maxHeight = Mathf.Max(_height + rectHeight + 5, _maxHeight);
+			if (!newLine)
+			{
+				return res;
+			}
+			_width = 3;
+			_height = _maxHeight;
+			return res;
 		}
 
 		public override void OnInspectorGUI()
 		{
-			EditorGUILayout.BeginVertical();
-			if (GUILayout.Button("Refresh"))
+			_height = 50;
+			_maxHeight = 0;
+			_width = 3;
+			
+			if (GUI.Button(MakeRect(150, 17, true), "Refresh"))
 			{
 				SetDescriptions();
 			}
-
-			EditorGUILayout.BeginHorizontal();
+			List<Texture2D> images = new List<Texture2D>();
 			foreach (KeyValuePair<TILE_TYPE, TileDescription> kvp in _tileDescriptions)
 			{
-				EditorGUILayout.BeginVertical();
-				GUILayout.Label(kvp.Key.ToString());
-				GUILayout.Label(kvp.Value.image);
-				EditorGUILayout.EndVertical();
-			}
-			EditorGUILayout.EndHorizontal();
 
-			EditorGUILayout.BeginHorizontal();
-			if (GUILayout.Button("Add"))
+				GUI.Label(MakeRect(100, 17), kvp.Key.ToString());
+				images.Add(kvp.Value.image);
+
+			}
+			NewLine();
+			foreach (Texture2D im in images)
+			{
+				GUI.Label(MakeRect(100, 100), im);
+			}
+			
+			NewLine();
+			
+			if (GUI.Button(MakeRect(200, 17), "Add wave"))
 			{
 				_data.wavesList.Add(new WaveData());
 			}
-			if (GUILayout.Button("Save"))
+			if (GUI.Button(MakeRect(200, 17, true), "Save"))
 			{
 				EditorUtility.SetDirty(_data);
 				AssetDatabase.SaveAssets();
 			}
-			EditorGUILayout.EndHorizontal();
+
+			NewLine();
+			
 			for (int waveIdx = 0; waveIdx < _data.wavesList.Count; ++waveIdx)
 			{
-				EditorGUILayout.BeginHorizontal();
-				bool foldout = EditorGUILayout.Foldout(waveIdx == _foldoutId, "Wave " + waveIdx);
-				if (GUILayout.Button("X"))
+				MakeRect(20, 17);
+				bool foldout = EditorGUI.Foldout(MakeRect(200, 17), waveIdx == _foldoutId, "Wave " + waveIdx);
+				if (GUI.Button(MakeRect(20, 20, true), "X"))
 				{
 					_data.wavesList.RemoveAt(waveIdx);
 					return;
 				}
-				EditorGUILayout.EndHorizontal();
-				if (foldout)
+
+				if (!foldout)
 				{
-					_foldoutId = waveIdx;
-					WaveData wave = _data.wavesList[waveIdx];
-					wave.width = Mathf.Clamp(EditorGUILayout.IntField(wave.width), 2, 10);
-
-					for (int lineIdx = 0; lineIdx < wave.lines.Count; ++lineIdx)
+					if (_foldoutId == waveIdx)
 					{
-						string[] tileStringsTab = wave.lines[lineIdx].Split('-');
+						_foldoutId = -1;
+					}
+					continue;
+				}
+				_foldoutId = waveIdx;
+				WaveData wave = _data.wavesList[waveIdx];
+				MakeRect(20, 17);
+				wave.width = Mathf.Clamp(EditorGUI.IntField(MakeRect(200, 17, true), wave.width), 2, 10);
+				for (int lineIdx = 0; lineIdx < wave.lines.Count; ++lineIdx)
+				{
+					MakeRect(20, 17);
+					string[] tileStringsTab = wave.lines[lineIdx].Split('-');
 
-						List<string> tileStrings = new List<string>();
+					List<string> tileStrings = new List<string>();
 
-						EditorGUILayout.BeginHorizontal();
 
-						for (int tileId = 0; tileId < wave.width; ++tileId)
+
+					for (int tileId = 0; tileId < wave.width; ++tileId)
+					{
+						TILE_TYPE type = TILE_TYPE.NORMAL;
+						if (tileId < tileStringsTab.Length && string.IsNullOrEmpty(tileStringsTab[tileId]) == false)
 						{
-							TILE_TYPE type = TILE_TYPE.NORMAL;
-							if (tileId < tileStringsTab.Length && string.IsNullOrEmpty(tileStringsTab[tileId]) == false)
-							{
-								type = (TILE_TYPE)Enum.Parse(typeof(TILE_TYPE), tileStringsTab[tileId]);
-							}
-
-							tileStrings.Add(type.ToString());
-
-							if (GUILayout.Button(_tileDescriptions[type].image))
-							{
-								type = (TILE_TYPE)(((int)type + 1) % Enum.GetValues(typeof(TILE_TYPE)).Length);
-								tileStrings[tileId] = type.ToString();
-							}
+							type = (TILE_TYPE)Enum.Parse(typeof(TILE_TYPE), tileStringsTab[tileId]);
 						}
 
-						string newString = string.Join("-", tileStrings.ToArray());
-						// ReSharper disable once RedundantCheckBeforeAssignment
-						if (_data.wavesList[waveIdx].lines[lineIdx] != newString)
+						tileStrings.Add(type.ToString());
+
+						if (!GUI.Button(MakeRect(100, 100), _tileDescriptions[type].image))
 						{
-							_data.wavesList[waveIdx].lines[lineIdx] = newString;
+							continue;
 						}
-
-						EditorGUILayout.EndHorizontal();
+						type = (TILE_TYPE)(((int)type + 1) % Enum.GetValues(typeof(TILE_TYPE)).Length);
+						tileStrings[tileId] = type.ToString();
 					}
 
-					if (GUILayout.Button("Add Line"))
+					string newString = string.Join("-", tileStrings.ToArray());
+					// ReSharper disable once RedundantCheckBeforeAssignment
+					if (_data.wavesList[waveIdx].lines[lineIdx] != newString)
 					{
-						wave.lines.Add("");
+						_data.wavesList[waveIdx].lines[lineIdx] = newString;
 					}
+
+					NewLine();
+				}
+
+				MakeRect(20, 17);
+				if (GUI.Button(MakeRect(200, 17, true), "Add Line"))
+				{
+					wave.lines.Add("");
 				}
 			}
-			EditorGUILayout.EndVertical();
+
 		}
 	}
 }
