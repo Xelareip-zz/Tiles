@@ -155,6 +155,11 @@ public class TilePlayer : MonoBehaviour
 		}
 	}
 
+	private TileBase MoveDirection(DIRECTIONS dir, bool force = false)
+	{
+		return MoveDirection(dir.ToString(), force);
+	}
+
 	private TileBase MoveDirection(string dir, bool force = false)
 	{
 		DIRECTIONS direction = (DIRECTIONS)Enum.Parse(typeof(DIRECTIONS), dir);
@@ -268,10 +273,6 @@ public class TilePlayer : MonoBehaviour
 	
 	private void AutoMove()
 	{
-		//if (!Parameters.Parameters.Instance.autoMove)
-		//{
-		//	return;
-		//}
 		bool timerPassed = autoMoveTimer < 0.0f;
 		autoMoveTimer -= Time.deltaTime;
 
@@ -286,7 +287,7 @@ public class TilePlayer : MonoBehaviour
 		}
 		tilesQueue.Clear();
 		QueueTile(savedTile);
-		autoMoveTile = MoveDirection("NORTH", true);
+		autoMoveTile = MoveDirection(DIRECTIONS.NORTH, true);
 	}
 
 	private void UpdateAutoMoveVisual()
@@ -352,7 +353,7 @@ public class TilePlayer : MonoBehaviour
 	public void EndGame()
 	{
 		endGame.SetActive(true);
-		Destroy(gameObject);
+		enabled = false;
 	}
 
 	//private bool CheckDeath()
@@ -409,6 +410,22 @@ public class TilePlayer : MonoBehaviour
 		{
 			currentTile.TileLeft();
 		}
+	}
+
+	public void ForceTile(TileBase tile)
+	{
+		if (tile == null)
+		{
+			return;
+		}
+		TileBase savedTile = null;
+		if (tilesQueue.Count > 0)
+		{
+			savedTile = tilesQueue[0];
+		}
+		tilesQueue.Clear();
+		QueueTile(savedTile);
+		QueueTile(tile);
 	}
 
 	private void ActivateClickableTiles()

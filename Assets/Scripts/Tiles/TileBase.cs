@@ -5,20 +5,24 @@ using UnityEngine;
 public enum DIRECTIONS
 {
 	NORTH,
-	SOUTH,
-	EAST,
-	WEST,
-	NORTH_EAST,
 	NORTH_WEST,
-	SOUTH_EAST,
+	WEST,
 	SOUTH_WEST,
+	SOUTH,
+	SOUTH_EAST,
+	EAST,
+	NORTH_EAST,
 }
 
 public enum TILE_TYPE
 {
 	NORMAL,
 	OBSTACLE,
-	POINT
+	POINT,
+	FORCE_NORTH,
+	FORCE_EAST,
+	FORCE_WEST,
+	RANDOM
 }
 
 public class TileBase : MonoBehaviour
@@ -37,18 +41,12 @@ public class TileBase : MonoBehaviour
 	public GameObject clickableObj;
 	public TileLine parentLine;
 
-	void Awake()
-	{
-	}
-
 	public virtual void TileReached()
 	{
-
 	}
 
 	public virtual void TileLeft()
 	{
-
 	}
 
 	bool HasInput()
@@ -65,7 +63,23 @@ public class TileBase : MonoBehaviour
 		return Input.mousePosition;
 	}
 
-	void Update()
+	private void Awake()
+	{
+		TileManager.Instance.spawnedTiles.Add(this);
+		ProtectedAwake();
+	}
+
+	protected virtual void ProtectedAwake()
+	{
+		
+	}
+
+	private void OnDestroy()
+	{
+		TileManager.Instance.spawnedTiles.Remove(this);
+	}
+	
+	private void Update()
 	{
 		clickableObj.SetActive(TilePlayer.Instance.IsTileCickable(this));
 

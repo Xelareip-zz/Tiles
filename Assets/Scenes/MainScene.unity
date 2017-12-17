@@ -1213,17 +1213,23 @@ MonoBehaviour:
   - {fileID: 1782964711776202, guid: 70803f84233a7a84d9dc1c7339ebfe8b, type: 2}
   - {fileID: 1782964711776202, guid: 33c0d8ce5bde46c448d1a60204a6b93e, type: 2}
   - {fileID: 1782964711776202, guid: 8f50c8c60ba538947a0e26f6034d3953, type: 2}
+  - {fileID: 1782964711776202, guid: a8a400ece21663548b6aa3a89262825d, type: 2}
+  - {fileID: 1782964711776202, guid: b66bdd98687f62240889ccef2d836eda, type: 2}
+  - {fileID: 1782964711776202, guid: 12c89cd427d9c6c46aec1150f8f779cc, type: 2}
+  - {fileID: 1782964711776202, guid: 43586db867c76d44a8efd5200763ba59, type: 2}
   tileLines:
   - {fileID: 64931472}
   lineOffset: 2
   dataList:
   - {fileID: 11400000, guid: ae3e254e0c068e74ea4f59743b6dc724, type: 2}
-  - {fileID: 11400000, guid: 1cd4f23a1758e434b823f624073f2100, type: 2}
-  data: {fileID: 11400000, guid: 1cd4f23a1758e434b823f624073f2100, type: 2}
+  - {fileID: 11400000, guid: 1256f34004074b94b954c5699e13836e, type: 2}
+  - {fileID: 11400000, guid: 0df4f3fecc419c94bb2fcfed87625073, type: 2}
+  data: {fileID: 11400000, guid: 1d4e666b1674473448e5f1d269e65645, type: 2}
   currentWave:
     width: 0
     lines: []
   currentLine: 0
+  spawnedTiles: []
 --- !u!114 &1127336939
 MonoBehaviour:
   m_ObjectHideFlags: 0

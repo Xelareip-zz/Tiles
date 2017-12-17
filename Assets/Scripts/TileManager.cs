@@ -6,7 +6,9 @@ using UnityEngine;
 public enum WAVES_LIST
 {
 	BASIC,
-	BASIC_5
+	BASIC_5,
+	BASIC_FORCE,
+	RANDOM
 }
 
 [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
@@ -16,13 +18,19 @@ public class TileManager : MonoBehaviour
 	{
 		{ TILE_TYPE.NORMAL, "TileDefault" },
 		{ TILE_TYPE.OBSTACLE, "TileDeath" },
-		{ TILE_TYPE.POINT, "TilePoint" }
+		{ TILE_TYPE.POINT, "TilePoint" },
+		{ TILE_TYPE.FORCE_NORTH, "TileForceNorth" },
+		{ TILE_TYPE.FORCE_EAST, "TileForceEast" },
+		{ TILE_TYPE.FORCE_WEST, "TileForceWest" },
+		{ TILE_TYPE.RANDOM, "TileRandom" }
 	};
 	
 	private static readonly Dictionary<WAVES_LIST, string> WavesNames = new Dictionary<WAVES_LIST, string>
 	{
 		{ WAVES_LIST.BASIC, "WavesBasic" },
-		{ WAVES_LIST.BASIC_5, "WavesBasic5" }
+		{ WAVES_LIST.BASIC_5, "WavesBasic5" },
+		{ WAVES_LIST.BASIC_FORCE, "WavesForce" },
+		{ WAVES_LIST.RANDOM, "WavesRandom" }
 	};
 	
 	public static TileManager Instance { get; private set; }
@@ -45,9 +53,12 @@ public class TileManager : MonoBehaviour
 
 	public Dictionary<TILE_TYPE, GameObject> tileToPrefab;
 
+	public List<TileBase> spawnedTiles;
+
 	private void Awake()
 	{
 		Instance = this;
+		spawnedTiles = new List<TileBase>();
 		TileLine.lineCount = 0;
 
 		tileToPrefab = new Dictionary<TILE_TYPE, GameObject>();

@@ -56,7 +56,11 @@ namespace Editor
 			{
 				{ TILE_TYPE.NORMAL, TileDescription.Build("Assets/Prefabs/TileDefault.prefab") },
 				{ TILE_TYPE.OBSTACLE, TileDescription.Build("Assets/Prefabs/TileDeath.prefab") },
-				{ TILE_TYPE.POINT, TileDescription.Build("Assets/Prefabs/TilePoint.prefab") }
+				{ TILE_TYPE.POINT, TileDescription.Build("Assets/Prefabs/TilePoint.prefab") },
+				{ TILE_TYPE.FORCE_NORTH, TileDescription.Build("Assets/Prefabs/TileForceNorth.prefab") },
+				{ TILE_TYPE.FORCE_EAST, TileDescription.Build("Assets/Prefabs/TileForceEast.prefab") },
+				{ TILE_TYPE.FORCE_WEST, TileDescription.Build("Assets/Prefabs/TileForceWest.prefab") },
+				{ TILE_TYPE.RANDOM, TileDescription.Build("Assets/Prefabs/TileRandom.prefab") }
 			};
 		}
 
@@ -160,7 +164,7 @@ namespace Editor
 
 						tileStrings.Add(type.ToString());
 
-						if (!GUI.Button(MakeRect(100, 100), _tileDescriptions[type].image))
+						if (!GUI.Button(MakeRect(75, 75), _tileDescriptions[type].image))
 						{
 							continue;
 						}
