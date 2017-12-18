@@ -35,6 +35,9 @@ namespace Editor
 		private int _foldoutId;
 		private int _dataWidth;
 
+		private Vector2Int _selectedCoordinates;
+		private Texture2D _selectedTexture;
+
 		private void OnEnable()
 		{
 			if (_tileDescriptions == null)
@@ -48,6 +51,11 @@ namespace Editor
 				_data.wavesList.Add(new WaveData());
 			}
 			_dataWidth = _data.wavesList[0].width;
+			
+			if (_selectedTexture == null)
+			{
+				_selectedTexture = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Sprites/Editor/Selected.png");
+			}
 		}
 
 		private static void SetDescriptions()
@@ -84,28 +92,66 @@ namespace Editor
 			return res;
 		}
 
+		private bool DetecteClick(Rect zone)
+		{
+			if (Event.current != null && Event.current.type == EventType.MouseDown)
+			{
+				if (zone.Contains(Event.current.mousePosition))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public override void OnInspectorGUI()
 		{
 			_height = 50;
 			_maxHeight = 0;
 			_width = 3;
+
+			bool typeChanged = false;
+			TILE_TYPE clickedType = TILE_TYPE.NORMAL;
 			
 			if (GUI.Button(MakeRect(150, 17, true), "Refresh"))
 			{
 				SetDescriptions();
 			}
+			float previewSize = 75;
+			int count = 0;
 			List<Texture2D> images = new List<Texture2D>();
 			foreach (KeyValuePair<TILE_TYPE, TileDescription> kvp in _tileDescriptions)
 			{
-
-				GUI.Label(MakeRect(100, 17), kvp.Key.ToString());
+				++count;
+				Rect currentRect =  MakeRect(previewSize, 17); 
+				GUI.Label(currentRect, kvp.Key.ToString());
 				images.Add(kvp.Value.image);
-
+				
+				if (Event.current != null && Event.current.type == EventType.MouseDown)
+				{
+					currentRect.height += previewSize;
+					if (currentRect.Contains(Event.current.mousePosition))
+					{
+						typeChanged = true;
+						clickedType = kvp.Key;
+					}
+				}
+				if (count > 5)
+				{
+					NewLine();
+					foreach (Texture2D im in images)
+					{
+						GUI.Label(MakeRect(previewSize, previewSize), im);
+					}
+					images.Clear();
+					NewLine();
+					count = 0;
+				}
 			}
 			NewLine();
 			foreach (Texture2D im in images)
 			{
-				GUI.Label(MakeRect(100, 100), im);
+				GUI.Label(MakeRect(previewSize, previewSize), im);
 			}
 			
 			NewLine();
@@ -144,6 +190,7 @@ namespace Editor
 					}
 					continue;
 				}
+				
 				_foldoutId = waveIdx;
 				WaveData wave = _data.wavesList[waveIdx];
 				wave.width = _dataWidth;
@@ -157,19 +204,35 @@ namespace Editor
 					for (int tileId = 0; tileId < wave.width; ++tileId)
 					{
 						TILE_TYPE type = TILE_TYPE.NORMAL;
+						
 						if (tileId < tileStringsTab.Length && string.IsNullOrEmpty(tileStringsTab[tileId]) == false)
 						{
 							type = (TILE_TYPE)Enum.Parse(typeof(TILE_TYPE), tileStringsTab[tileId]);
 						}
 
 						tileStrings.Add(type.ToString());
-
-						if (!GUI.Button(MakeRect(75, 75), _tileDescriptions[type].image))
+						Rect selectionRect;
+						if (lineIdx == _selectedCoordinates.x && tileId == _selectedCoordinates.y)
+						{
+							if (typeChanged)
+							{
+								type = clickedType;
+								tileStrings[tileId] = type.ToString();	
+							}
+							
+							selectionRect = new Rect(_width - 1, _height - 1, 77, 77);
+							EditorGUI.DrawPreviewTexture(selectionRect, _selectedTexture);
+						}
+						
+						Rect currentRect = MakeRect(75, 75);
+						GUI.Label(currentRect, _tileDescriptions[type].image);
+						if (!DetecteClick(currentRect))
 						{
 							continue;
 						}
-						type = (TILE_TYPE)(((int)type + 1) % Enum.GetValues(typeof(TILE_TYPE)).Length);
-						tileStrings[tileId] = type.ToString();
+						_selectedCoordinates = new Vector2Int(lineIdx, tileId);
+						//type = (TILE_TYPE)(((int)type + 1) % Enum.GetValues(typeof(TILE_TYPE)).Length);
+						//tileStrings[tileId] = type.ToString();
 					}
 
 					string newString = string.Join("-", tileStrings.ToArray());
