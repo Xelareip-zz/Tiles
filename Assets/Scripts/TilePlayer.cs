@@ -414,7 +414,7 @@ public class TilePlayer : MonoBehaviour
 
 	public void ForceTile(TileBase tile)
 	{
-		if (tile == null)
+		if (tile == null || autoMoveTimer <= 0)
 		{
 			return;
 		}
