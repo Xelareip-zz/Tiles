@@ -22,7 +22,8 @@ public class TileManager : MonoBehaviour
 		{ TILE_TYPE.FORCE_NORTH, "TileForceNorth" },
 		{ TILE_TYPE.FORCE_EAST, "TileForceEast" },
 		{ TILE_TYPE.FORCE_WEST, "TileForceWest" },
-		{ TILE_TYPE.RANDOM, "TileRandom" }
+		{ TILE_TYPE.RANDOM, "TileRandom" },
+		{ TILE_TYPE.BUMP, "TileBump" }
 	};
 	
 	private static readonly Dictionary<WAVES_LIST, string> WavesNames = new Dictionary<WAVES_LIST, string>
