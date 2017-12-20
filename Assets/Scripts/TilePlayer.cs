@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
+using UnityEngine.WSA;
 
 [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 public class TilePlayer : MonoBehaviour
@@ -269,6 +270,14 @@ public class TilePlayer : MonoBehaviour
 	{
 		loopGhosts[0].transform.position = transform.position + Vector3.left * TileManager.GetWidth();
 		loopGhosts[1].transform.position = transform.position + Vector3.right * TileManager.GetWidth();
+	}
+
+	public void Teleport(TileBase target)
+	{
+		Instance.transform.position = new Vector3(target.transform.position.x - 0.05f, target.transform.position.y, Instance.transform.position.z);
+		Instance.ForceTile(target);
+
+		autoMoveTimer = Parameters.Parameters.Instance.autoMoveDelay;
 	}
 	
 	private void AutoMove()

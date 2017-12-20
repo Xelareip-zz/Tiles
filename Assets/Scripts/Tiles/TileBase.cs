@@ -23,7 +23,8 @@ public enum TILE_TYPE
 	FORCE_EAST,
 	FORCE_WEST,
 	RANDOM,
-	BUMP
+	BUMP,
+	JUMP
 }
 
 public class TileBase : MonoBehaviour

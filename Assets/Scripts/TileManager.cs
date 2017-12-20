@@ -23,7 +23,8 @@ public class TileManager : MonoBehaviour
 		{ TILE_TYPE.FORCE_EAST, "TileForceEast" },
 		{ TILE_TYPE.FORCE_WEST, "TileForceWest" },
 		{ TILE_TYPE.RANDOM, "TileRandom" },
-		{ TILE_TYPE.BUMP, "TileBump" }
+		{ TILE_TYPE.BUMP, "TileBump" },
+		{ TILE_TYPE.JUMP, "TileJump" }
 	};
 	
 	private static readonly Dictionary<WAVES_LIST, string> WavesNames = new Dictionary<WAVES_LIST, string>
@@ -182,7 +183,7 @@ public class TileManager : MonoBehaviour
 
 	private void SpawnLines()
 	{
-		while (tileLines[tileLines.Count - 1].transform.position.y < transform.position.y + TileCamera.Instance.camera.orthographicSize)
+		while (tileLines[tileLines.Count - 1].transform.position.y < Mathf.Max(TilePlayer.Instance.transform.position.y, transform.position.y) + TileCamera.Instance.camera.orthographicSize)
 		{
 			GameObject newLineObj = Instantiate(possibleLines[0], tileLines[tileLines.Count - 1].transform.position + Vector3.up * lineOffset, Quaternion.identity);
 			TileLine newLine = newLineObj.GetComponent<TileLine>();

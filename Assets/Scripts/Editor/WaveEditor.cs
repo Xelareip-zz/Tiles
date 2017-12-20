@@ -69,7 +69,8 @@ namespace Editor
 				{ TILE_TYPE.FORCE_EAST, TileDescription.Build("Assets/Prefabs/TileForceEast.prefab") },
 				{ TILE_TYPE.FORCE_WEST, TileDescription.Build("Assets/Prefabs/TileForceWest.prefab") },
 				{ TILE_TYPE.RANDOM, TileDescription.Build("Assets/Prefabs/TileRandom.prefab") },
-				{ TILE_TYPE.BUMP, TileDescription.Build("Assets/Prefabs/TileBump.prefab") }
+				{ TILE_TYPE.BUMP, TileDescription.Build("Assets/Prefabs/TileBump.prefab") },
+				{ TILE_TYPE.JUMP, TileDescription.Build("Assets/Prefabs/TileJump.prefab") }
 			};
 		}
 
