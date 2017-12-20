@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
-using UnityEngine.WSA;
 
 [SuppressMessage("ReSharper", "ForCanBeConvertedToForeach")]
 public class TilePlayer : MonoBehaviour

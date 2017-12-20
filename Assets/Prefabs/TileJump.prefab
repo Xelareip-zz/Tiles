@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coll: {fileID: 61337264005605656}
-  clickableObj: {fileID: 1782964711776202}
+  clickableObj: {fileID: 1579635531710668}
   parentLine: {fileID: 0}
 --- !u!212 &212269959889456714
 SpriteRenderer:
