@@ -17,7 +17,7 @@ public class TileLine : MonoBehaviour
 		lineNumber = ++lineCount;
 	}
 
-	public void SpawnTiles(List<TILE_TYPE> forcedTiles)
+	public void SpawnTiles(List<string> forcedTiles)
 	{
 		lineWidth = forcedTiles.Count;
 		
@@ -37,20 +37,13 @@ public class TileLine : MonoBehaviour
 	public void SpawnTiles(int width)
 	{
 		lineWidth = width;
-		lineWidth = Mathf.Max(lineWidth, lineWidth);
 		
 		for (int i = 0; i < lineWidth; ++i)
 		{
 			TileBase newTile;
 			if (tiles.Count <= i)
 			{
-				int modelIdx = 0;
-				if (lineNumber > 5)
-				{
-					float randValue = Random.Range(0, 90 + 10 * TileManager.Instance.possibleTiles.Count);
-					modelIdx = Mathf.Max(0, Mathf.FloorToInt((randValue - 100.0f) / 10) + 1);
-				}
-				GameObject tileModel = TileManager.Instance.possibleTiles[modelIdx];
+				GameObject tileModel = TileManager.Instance.tileToPrefab["TileDefault"];
 				Vector3 tilePos = transform.position + Vector3.right * (-Parameters.Parameters.Instance.spaceSize * (lineWidth - 1) / 2.0f + Parameters.Parameters.Instance.spaceSize * i);
 				GameObject newTileObj = Instantiate(tileModel, tilePos, transform.rotation, transform);
 				newTile = newTileObj.GetComponent<TileBase>();

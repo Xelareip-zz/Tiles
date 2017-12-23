@@ -10,29 +10,9 @@ public class WaveData
 	[SerializeField]
 	public List<string> lines = new List<string>();
 
-	public List<TILE_TYPE> GetTiles(int lineIdx)
+	public List<string> GetTiles(int lineIdx)
 	{
-		if (lineIdx >= lines.Count)
-		{
-			return null;
-		}
-
-		List<TILE_TYPE> res = new List<TILE_TYPE>();
-
-		string[] tileStringsTab = lines[lineIdx].Split('-');
-
-		for (int tileId = 0; tileId < width; ++tileId)
-		{
-			TILE_TYPE type = TILE_TYPE.NORMAL;
-			if (tileId < tileStringsTab.Length && string.IsNullOrEmpty(tileStringsTab[tileId]) == false)
-			{
-				type = (TILE_TYPE)Enum.Parse(typeof(TILE_TYPE), tileStringsTab[tileId]);
-			}
-
-			res.Add(type);
-		}
-
-		return res;
+		return lineIdx >= lines.Count ? null : new List<string>(lines[lineIdx].Split('-'));
 	}
 }
 

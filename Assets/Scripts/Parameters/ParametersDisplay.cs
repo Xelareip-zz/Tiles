@@ -16,7 +16,7 @@ public class PrefabsPaths
 [AttributeUsage(AttributeTargets.Field, Inherited = true)]
 public class ParameterAttribute : Attribute
 {
-	private string name;
+	protected string name;
 
 	public ParameterAttribute()
 	{
@@ -31,6 +31,11 @@ public class ParameterAttribute : Attribute
 	public string GetName()
 	{
 		return name;
+	}
+
+	public virtual ParameterEditor GetEditor()
+	{
+		return null;
 	}
 }
 
@@ -261,6 +266,45 @@ public class EnumParameterEditor : ParameterEditor
 	}
 }
 
+public class ListStringParameterEditor : ParameterEditor
+{
+	private List<string> _dataList;
+	private Dropdown inputField;
+
+	public ListStringParameterEditor(string name, List<string> options, string val = "") : base(name)
+	{
+		GameObject model = Resources.Load<GameObject>(PrefabsPaths.ENUM_FIELD_PREFAB_PATH);
+		editor = GameObject.Instantiate<GameObject>(model, ParameterEditor.holder.transform);
+
+		inputField = editor.GetComponentInChildren<Dropdown>();
+		inputField.ClearOptions();
+		inputField.AddOptions(options);
+
+		for (int idx = 0; idx < options.Count; ++idx)
+		{
+			if (inputField.options[idx].text == val)
+			{
+				inputField.value = idx;
+				break;
+			}
+		}
+
+		Text[] children = editor.GetComponentsInChildren<Text>();
+		foreach (Text trans in children)
+		{
+			if (trans.gameObject.name == "Label")
+			{
+				trans.text = name;
+			}
+		}
+	}
+
+	public override object GetValue()
+	{
+		return inputField.options[inputField.value].text;
+	}
+}
+
 public abstract class ParameterBase
 {
 	public abstract void Load();
@@ -321,6 +365,12 @@ public class ParametersDisplay : MonoBehaviour
 						{
 							name = info.Name;
 						}
+						ParameterEditor editor = parameterAttr.GetEditor();
+						if (editor != null)
+						{
+							parameterEditors.Add(info, editor);
+							continue;
+						}
 						bool found = false;
 						switch (info.FieldType.ToString())
 						{
@@ -341,10 +391,9 @@ public class ParametersDisplay : MonoBehaviour
 								found = true;
 								break;
 						}
-						if (found == false && info.FieldType.BaseType == typeof(System.Enum))
+						if (found == false && info.FieldType.BaseType == typeof(Enum))
 						{
 							parameterEditors.Add(info, new EnumParameterEditor(name, info.FieldType, info.GetValue(target).ToString()));
-							found = true;
 						}
 					}
 					break;

@@ -1,30 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 namespace Editor
 {
-	
-	public class TileDescription
-	{
-		public Texture2D image;
-
-		public static TileDescription Build(string prefabPath)
-		{
-			TileDescription newDesc = new TileDescription();
-			GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-		
-
-			newDesc.image = AssetPreview.GetAssetPreview(prefab);
-			return newDesc;
-		}
-	}
-
 	[CustomEditor(typeof(WavesData))]
 	public class WaveEditor : UnityEditor.Editor
 	{
-		private static Dictionary<TILE_TYPE, TileDescription> _tileDescriptions;
+		private static Dictionary<string, Texture2D> _tileImages = new Dictionary<string, Texture2D>();
 
 		private WavesData _data;
 
@@ -38,12 +23,12 @@ namespace Editor
 		private Vector2Int _selectedCoordinates;
 		private Texture2D _selectedTexture;
 
+		private static List<GameObject> tiles;
+
 		private void OnEnable()
 		{
-			if (_tileDescriptions == null)
-			{
-				SetDescriptions();
-			}
+			tiles = Resources.LoadAll<GameObject>("Tiles").ToList();
+			SetDescriptions();
 			_data = (WavesData)target;
 			if (_data.wavesList == null)
 			{
@@ -60,18 +45,11 @@ namespace Editor
 
 		private static void SetDescriptions()
 		{
-			_tileDescriptions = new Dictionary<TILE_TYPE, TileDescription>
+			_tileImages.Clear();
+			foreach (GameObject tile in tiles)
 			{
-				{ TILE_TYPE.NORMAL, TileDescription.Build("Assets/Prefabs/TileDefault.prefab") },
-				{ TILE_TYPE.OBSTACLE, TileDescription.Build("Assets/Prefabs/TileDeath.prefab") },
-				{ TILE_TYPE.POINT, TileDescription.Build("Assets/Prefabs/TilePoint.prefab") },
-				{ TILE_TYPE.FORCE_NORTH, TileDescription.Build("Assets/Prefabs/TileForceNorth.prefab") },
-				{ TILE_TYPE.FORCE_EAST, TileDescription.Build("Assets/Prefabs/TileForceEast.prefab") },
-				{ TILE_TYPE.FORCE_WEST, TileDescription.Build("Assets/Prefabs/TileForceWest.prefab") },
-				{ TILE_TYPE.RANDOM, TileDescription.Build("Assets/Prefabs/TileRandom.prefab") },
-				{ TILE_TYPE.BUMP, TileDescription.Build("Assets/Prefabs/TileBump.prefab") },
-				{ TILE_TYPE.JUMP, TileDescription.Build("Assets/Prefabs/TileJump.prefab") }
-			};
+				_tileImages.Add(tile.name, AssetPreview.GetAssetPreview(tile));
+			}
 		}
 
 		private void NewLine()
@@ -94,7 +72,7 @@ namespace Editor
 			return res;
 		}
 
-		private bool DetecteClick(Rect zone)
+		private bool DetectClick(Rect zone)
 		{
 			if (Event.current != null && Event.current.type == EventType.MouseDown)
 			{
@@ -113,7 +91,7 @@ namespace Editor
 			_width = 3;
 
 			bool typeChanged = false;
-			TILE_TYPE clickedType = TILE_TYPE.NORMAL;
+			string clickedName = "";
 			
 			if (GUI.Button(MakeRect(150, 17, true), "Refresh"))
 			{
@@ -122,22 +100,21 @@ namespace Editor
 			float previewSize = 75;
 			int count = 0;
 			List<Texture2D> images = new List<Texture2D>();
-			foreach (KeyValuePair<TILE_TYPE, TileDescription> kvp in _tileDescriptions)
+			foreach (GameObject tile in tiles)
 			{
 				++count;
 				Rect currentRect =  MakeRect(previewSize, 17); 
-				GUI.Label(currentRect, kvp.Key.ToString());
-				images.Add(kvp.Value.image);
+				GUI.Label(currentRect, tile.name.Replace("Tile", ""));
+				images.Add(AssetPreview.GetAssetPreview(tile));
 				
-				if (Event.current != null && Event.current.type == EventType.MouseDown)
+				currentRect.height += previewSize;
+
+				if (DetectClick(currentRect))
 				{
-					currentRect.height += previewSize;
-					if (currentRect.Contains(Event.current.mousePosition))
-					{
-						typeChanged = true;
-						clickedType = kvp.Key;
-					}
+					typeChanged = true;
+					clickedName = tile.name;
 				}
+				
 				if (count > 5)
 				{
 					NewLine();
@@ -205,21 +182,16 @@ namespace Editor
 
 					for (int tileId = 0; tileId < wave.width; ++tileId)
 					{
-						TILE_TYPE type = TILE_TYPE.NORMAL;
-						
-						if (tileId < tileStringsTab.Length && string.IsNullOrEmpty(tileStringsTab[tileId]) == false)
-						{
-							type = (TILE_TYPE)Enum.Parse(typeof(TILE_TYPE), tileStringsTab[tileId]);
-						}
+						string name = tileStringsTab[tileId];
 
-						tileStrings.Add(type.ToString());
+						tileStrings.Add(name);
 						Rect selectionRect;
 						if (lineIdx == _selectedCoordinates.x && tileId == _selectedCoordinates.y)
 						{
 							if (typeChanged)
 							{
-								type = clickedType;
-								tileStrings[tileId] = type.ToString();	
+								name = clickedName;
+								tileStrings[tileId] = name;	
 							}
 							
 							selectionRect = new Rect(_width - 1, _height - 1, 77, 77);
@@ -227,14 +199,17 @@ namespace Editor
 						}
 						
 						Rect currentRect = MakeRect(75, 75);
-						GUI.Label(currentRect, _tileDescriptions[type].image);
-						if (!DetecteClick(currentRect))
+						if (_tileImages.ContainsKey(name) == false)
+						{
+							name = "TileDefault";
+						}
+						GUI.Label(currentRect, _tileImages[name]);
+						if (!DetectClick(currentRect))
 						{
 							continue;
 						}
 						_selectedCoordinates = new Vector2Int(lineIdx, tileId);
-						//type = (TILE_TYPE)(((int)type + 1) % Enum.GetValues(typeof(TILE_TYPE)).Length);
-						//tileStrings[tileId] = type.ToString();
+						tileStrings[tileId] = name;
 					}
 
 					string newString = string.Join("-", tileStrings.ToArray());

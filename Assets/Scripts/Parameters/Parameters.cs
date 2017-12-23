@@ -53,35 +53,20 @@ namespace Parameters
 		[Parameter]
 		public bool loopLeftRight = true;
 
-		//[Parameter]
-		//public bool mustTiles = false;
-		//[Parameter("Fractured tiles")]
-		//public bool fragileTiles = false;
-
 		[Parameter("Difficulty Increase (%/line)")]
 		public float difficultyIncrease = 1.0f;
 
-		//[Parameter]
-		//public int width = false;
 		[Parameter]
 		public float spaceSize = 1.5f;
-		//[Parameter("Death level (height%)")]
-		//public float deathHeight = -50.0f;
 		[Parameter("Swipe?")]
 		public bool swipeControl = true;
 		[Parameter("Swipe sensibility")]
 		public float swipeSensibility = 80.0f;
 
-		//public bool autoMove = true;
-
 		[Parameter("Auto move delay")]
 		public float autoMoveDelay = 2.0f;
-		[Parameter]
-		public WAVES_LIST wavesStyle = WAVES_LIST.BASIC;
-
-		//[Parameter]
-		//public float cameraOffset = 4.0f;
-
+		[ResourceParameter("Levels", "Levels", "WavesBasic")]
+		public string levels = "WavesBasic";
 
 
 		private Parameters()
