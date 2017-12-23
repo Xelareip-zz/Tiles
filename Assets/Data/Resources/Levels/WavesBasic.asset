@@ -14,13 +14,19 @@ MonoBehaviour:
   wavesList:
   - width: 4
     lines:
-    - OBSTACLE-NORMAL-OBSTACLE-NORMAL
-    - NORMAL-NORMAL-NORMAL-NORMAL
-    - NORMAL-OBSTACLE-NORMAL-OBSTACLE
-    - NORMAL-NORMAL-NORMAL-NORMAL
-  - width: 4
+    - TileTimedDeath-TileDefault-TileDefault-TileDefault
+    - TileDefault-TileDefault-TileTimedDeath-TileDefault
+    - TileDefault-TileDefault-TileDefault-TileDefault
+    - TileDefault-TileDefault-TileDefault-TileDefault
+  - width: 0
     lines:
-    - OBSTACLE-OBSTACLE-OBSTACLE-NORMAL
-    - NORMAL-NORMAL-NORMAL-NORMAL
-    - NORMAL-OBSTACLE-OBSTACLE-OBSTACLE
-    - NORMAL-NORMAL-NORMAL-NORMAL
+    - TileDefault-TileDefault-TileDefault-TileDefault
+    - TileDefault-TileDefault-TileDefault-TileDefault
+    - TileDefault-TileDefault-TileDefault-TileDefault
+    - TileDefault-TileDefault-TileDefault-TileDefault
+  - width: 0
+    lines:
+    - TileDefault-TileDefault-TileDefault-TileDefault
+    - TileDefault-TileDefault-TileDefault-TileDefault
+    - TileDefault-TileDefault-TileDefault-TileDefault
+    - TileDefault-TileDefault-TileDefault-TileDefault
