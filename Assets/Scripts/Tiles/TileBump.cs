@@ -2,6 +2,6 @@
 {	
 	public override void TileReached()
 	{
-		TilePlayer.Instance.ForceTile(TilePlayer.Instance.currentTile);
+		TilePlayer.Instance.ForceTile(TilePlayer.Instance.LastTile(1));
 	}
 }

@@ -53,7 +53,7 @@ public class TileManager : MonoBehaviour
 		SpawnLines();
 		
 		TilePlayer.Instance.FindTile();
-		TilePlayer.Instance.transform.position = new Vector3(TilePlayer.Instance.currentTile.transform.position.x, TilePlayer.Instance.currentTile.transform.position.y, TilePlayer.Instance.transform.position.z);
+		TilePlayer.Instance.transform.position = new Vector3(TilePlayer.Instance.LastTile().transform.position.x, TilePlayer.Instance.LastTile().transform.position.y, TilePlayer.Instance.transform.position.z);
     }
 
 	private void FindWave()

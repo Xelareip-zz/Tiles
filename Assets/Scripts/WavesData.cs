@@ -21,4 +21,25 @@ public class WavesData : ScriptableObject
 {
 	[SerializeField]
 	public List<WaveData> wavesList;
+
+	public void LoadFile(TextAsset textAsset)
+	{
+		string content = textAsset.text;
+		
+		wavesList = new List<WaveData>();
+
+		string[] wavesStrings = content.Split('_');
+		foreach (string wave in  wavesStrings)
+		{
+			WaveData newData = new WaveData();
+
+			string cleanWave = wave.Replace('\r', '\n').Replace("\n\n", "\n").Trim('\n');
+			
+			foreach (string line in cleanWave.Split('\n'))
+			{
+				newData.lines.Add(line);
+			}
+			wavesList.Add(newData);
+		}
+	}
 }

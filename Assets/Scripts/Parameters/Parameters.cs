@@ -65,7 +65,7 @@ namespace Parameters
 
 		[Parameter("Auto move delay")]
 		public float autoMoveDelay = 2.0f;
-		[ResourceParameter("Levels", "Levels", "WavesBasic")]
+		[ResourceParameter("Levels", "Levels")]
 		public string levels = "WavesBasic";
 
 

@@ -14,6 +14,7 @@ MonoBehaviour:
   wavesList:
   - width: 4
     lines:
-    - NORMAL-OBSTACLE-NORMAL-NORMAL
-    - NORMAL-RANDOM-NORMAL-NORMAL
+    - TileJump-OBSTACLE-NORMAL-NORMAL
+    - TileDeath-RANDOM-TileBump-NORMAL
     - NORMAL-NORMAL-OBSTACLE-RANDOM
+    - 

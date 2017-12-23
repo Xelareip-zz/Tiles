@@ -13,7 +13,8 @@ public class TilePlayer : MonoBehaviour
 
 	public float speed;
 
-	public TileBase currentTile;
+	public List<TileBase> tileHistory = new List<TileBase>();
+	//public TileBase currentTile;
 	public List<TileBase> tilesQueue = new List<TileBase>();
 	public int inputQueueSize;
 
@@ -75,7 +76,7 @@ public class TilePlayer : MonoBehaviour
 
 	private TileBase GetRootTile()
 	{
-		return tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : currentTile;
+		return tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : LastTile();
 	}
 
 	private void OnSwipe(float angle)
@@ -111,13 +112,18 @@ public class TilePlayer : MonoBehaviour
 		}
 	}
 
+	public TileBase LastTile(int offset = 0)
+	{
+		return tileHistory[tileHistory.Count - offset - 1];
+	}
+
 	private void MoveLeft()
 	{
 		if (tilesQueue.Count > inputQueueSize - 1)
 		{
 			return;
 		}
-		TileBase rootTile = tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : currentTile;
+		TileBase rootTile = tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : LastTile();
 		
 		if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.NORTH_WEST]))
 		{
@@ -139,7 +145,7 @@ public class TilePlayer : MonoBehaviour
 		{
 			return;
 		}
-		TileBase rootTile = tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : currentTile;
+		TileBase rootTile = tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : LastTile();
 		
 		if (clickableTiles.Contains(rootTile.neighbors[(int)DIRECTIONS.NORTH_EAST]))
 		{
@@ -181,6 +187,13 @@ public class TilePlayer : MonoBehaviour
 		return target;
 	}
 
+	private void ArriveOnTile(TileBase target)
+	{
+		tileHistory.Add(target);
+		target.TileReached();
+		
+	}
+
 	public void FindTile()
 	{
 		float minDist = float.MaxValue;
@@ -201,8 +214,8 @@ public class TilePlayer : MonoBehaviour
 				}
 			}
 		}
-
-		currentTile = closestTile;
+		
+		tileHistory.Add(closestTile);
 	}
 
 	private void CheckKeyboard()
@@ -223,13 +236,6 @@ public class TilePlayer : MonoBehaviour
 
 	private void Update ()
 	{
-		//if (CheckDeath())
-		//{
-		//	EndGame();
-		//	return;
-		//}
-		AutoMove();
-		UpdateAutoMoveVisual();
 		cameraMove.speed = Vector3.up * GetCameraSpeed();
 		difficulty = maxDistance;
 		CheckKeyboard();
@@ -247,19 +253,21 @@ public class TilePlayer : MonoBehaviour
 				autoMoveTile = null;
 				autoMoveTimer = Parameters.Parameters.Instance.autoMoveDelay;
 			}
-			tilesQueue[0].TileReached();
-			currentTile = tilesQueue[0];
+			ArriveOnTile(tilesQueue[0]);
+			
 			if (tilesQueue.Count > 0)
 			{
 				tilesQueue.RemoveAt(0);
 			}
 			if (tilesQueue.Count > 0)
 			{
-				currentTile.TileLeft();
+				LastTile().TileLeft();
 			}
 			FindBestGhost();
 		}
 
+		AutoMove();
+		UpdateAutoMoveVisual();
 		ActivateClickableTiles();
 		DrawPath();
 		AdaptGhosts();
@@ -273,10 +281,27 @@ public class TilePlayer : MonoBehaviour
 
 	public void Teleport(TileBase target)
 	{
-		Instance.transform.position = new Vector3(target.transform.position.x - 0.05f, target.transform.position.y, Instance.transform.position.z);
-		Instance.ForceTile(target);
-
+		transform.position = new Vector3(target.transform.position.x, target.transform.position.y, Instance.transform.position.z);
+		tilesQueue.Clear();
+		ArriveOnTile(target);
+		autoMoveTile = null;
 		autoMoveTimer = Parameters.Parameters.Instance.autoMoveDelay;
+	}
+
+	public void ForceTile(TileBase tile)
+	{
+		if (tile == null || autoMoveTimer <= 0)
+		{
+			return;
+		}
+		TileBase savedTile = null;
+		if (tilesQueue.Count > 0)
+		{
+			savedTile = tilesQueue[0];
+		}
+		tilesQueue.Clear();
+		QueueTile(savedTile);
+		QueueTile(tile);
 	}
 	
 	private void AutoMove()
@@ -416,24 +441,8 @@ public class TilePlayer : MonoBehaviour
 		}
 		if (tilesQueue.Count == 1)
 		{
-			currentTile.TileLeft();
+			LastTile().TileLeft();
 		}
-	}
-
-	public void ForceTile(TileBase tile)
-	{
-		if (tile == null || autoMoveTimer <= 0)
-		{
-			return;
-		}
-		TileBase savedTile = null;
-		if (tilesQueue.Count > 0)
-		{
-			savedTile = tilesQueue[0];
-		}
-		tilesQueue.Clear();
-		QueueTile(savedTile);
-		QueueTile(tile);
 	}
 
 	private void ActivateClickableTiles()
@@ -444,12 +453,12 @@ public class TilePlayer : MonoBehaviour
 		{
 			return;
 		}
-		TileBase rootTile = tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : currentTile;
-
+		TileBase rootTile = tilesQueue.Count > 0 ? tilesQueue[tilesQueue.Count - 1] : LastTile();
+/*
 		if (currentTile == null)
 		{
 			return;
-		}
+		}*/
 		for (int i = 0; i < rootTile.neighbors.Length; ++i)
 		{
 			// ReSharper disable once InvertIf

@@ -8,17 +8,13 @@ namespace Parameters
 	public class ResourceParameterAttribute : ParameterAttribute
 	{
 		private string _dataPath;
-		[SerializeField]
-		private string _selectedData;
 
-
-		public ResourceParameterAttribute(string name, string dataPath, string defaultChoice) : base(name)
+		public ResourceParameterAttribute(string name, string dataPath) : base(name)
 		{
 			_dataPath = dataPath;
-			_selectedData = defaultChoice;
 		}
 
-		public override ParameterEditor GetEditor()
+		public override ParameterEditor GetEditor(object val)
 		{
 			List<string> options = new List<string>();
 
@@ -29,7 +25,7 @@ namespace Parameters
 				options.Add(objects[objectIdx].name);
 			}
 			
-			return new ListStringParameterEditor(name, options, _selectedData);
+			return new ListStringParameterEditor(name, options, (string)val);
 		}
 	}
 }

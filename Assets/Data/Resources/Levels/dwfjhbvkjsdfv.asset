@@ -15,5 +15,5 @@ MonoBehaviour:
   - width: 4
     lines:
     - TileTeleporterEntry-TileDefault-TileDefault-TileDefault
-    - TileDefault-TileDefault-TileDefault-TileDefault
-    - TileDefault-TileTeleporterExit-TileDefault-TileDefault
+    - TileIce-TileIce-TileDefault-TileDefault
+    - TileIce-TileTeleporterExit-TileDefault-TileDefault

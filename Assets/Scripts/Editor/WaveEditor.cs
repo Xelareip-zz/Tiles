@@ -25,6 +25,8 @@ namespace Editor
 
 		private static List<GameObject> tiles;
 
+		private TextAsset file;
+
 		private void OnEnable()
 		{
 			tiles = Resources.LoadAll<GameObject>("Tiles").ToList();
@@ -92,7 +94,13 @@ namespace Editor
 
 			bool typeChanged = false;
 			string clickedName = "";
-			
+			GUI.Label(MakeRect(150, 17), "File to load");
+			file = (TextAsset)EditorGUI.ObjectField(MakeRect(250, 17, true), file, typeof(TextAsset));
+			if (GUI.Button(MakeRect(350, 17, true), "Load file"))
+			{
+				_data.LoadFile(file);
+			}
+			NewLine();
 			if (GUI.Button(MakeRect(150, 17, true), "Refresh"))
 			{
 				SetDescriptions();
@@ -182,7 +190,11 @@ namespace Editor
 
 					for (int tileId = 0; tileId < wave.width; ++tileId)
 					{
-						string name = tileStringsTab[tileId];
+						string name = "TileDefault";
+						if (tileStringsTab.Length > tileId)
+						{
+							name = tileStringsTab[tileId];	
+						}
 
 						tileStrings.Add(name);
 						Rect selectionRect;

@@ -14,7 +14,7 @@ MonoBehaviour:
   wavesList:
   - width: 5
     lines:
-    - FORCE_NORTH-NORMAL-FORCE_EAST-NORMAL-FORCE_EAST
-    - JUMP-NORMAL-FORCE_NORTH-BUMP-NORMAL
-    - OBSTACLE-NORMAL-OBSTACLE-NORMAL-OBSTACLE
+    - TileForceWest-TileForceWest-FORCE_EAST-TileForceEast-TileForceNorth
+    - JUMP-NORMAL-TileDefault-TileIce-TileForceWest
+    - OBSTACLE-TileDeath-TileDeath-NORMAL-OBSTACLE
     - FORCE_EAST-NORMAL-NORMAL-NORMAL-NORMAL

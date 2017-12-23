@@ -33,7 +33,7 @@ public class ParameterAttribute : Attribute
 		return name;
 	}
 
-	public virtual ParameterEditor GetEditor()
+	public virtual ParameterEditor GetEditor(object val)
 	{
 		return null;
 	}
@@ -365,7 +365,7 @@ public class ParametersDisplay : MonoBehaviour
 						{
 							name = info.Name;
 						}
-						ParameterEditor editor = parameterAttr.GetEditor();
+						ParameterEditor editor = parameterAttr.GetEditor(info.GetValue(target));
 						if (editor != null)
 						{
 							parameterEditors.Add(info, editor);
