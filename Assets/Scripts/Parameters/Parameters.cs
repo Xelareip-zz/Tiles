@@ -39,12 +39,12 @@ namespace Parameters
 
 		[Parameter("Player speed")]
 		public float playerSpeed = 4.0f;
-		[Parameter("Camera speed")]
+		//[Parameter("Camera speed")]
 		public float cameraSpeed = 1.0f;
 
-		[Parameter("Input queue")]
-		public int inputQueueSize = -1;
-		[Parameter]
+		//[Parameter("Input queue")]
+		public int inputQueueSize = 2;
+		//[Parameter]
 		public bool drawPath = false;
 
 		[Parameter("Distance points")]
@@ -56,9 +56,9 @@ namespace Parameters
 		[Parameter("Difficulty Increase (%/line)")]
 		public float difficultyIncrease = 1.0f;
 
-		[Parameter]
+		//[Parameter]
 		public float spaceSize = 1.5f;
-		[Parameter("Swipe?")]
+		//[Parameter("Swipe?")]
 		public bool swipeControl = true;
 		[Parameter("Swipe sensibility")]
 		public float swipeSensibility = 80.0f;

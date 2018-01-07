@@ -123,7 +123,7 @@ namespace Editor
 					clickedName = tile.name;
 				}
 				
-				if (count > 5)
+				if (count > 10)
 				{
 					NewLine();
 					foreach (Texture2D im in images)
@@ -183,7 +183,11 @@ namespace Editor
 				wave.width = _dataWidth;
 				for (int lineIdx = wave.lines.Count - 1; lineIdx >= 0; --lineIdx)
 				{
-					MakeRect(20, 17);
+					if (GUI.Button(MakeRect(20, 17), "X"))
+					{
+						wave.lines.RemoveAt(lineIdx);
+						continue;
+					}
 					string[] tileStringsTab = wave.lines[lineIdx].Split('-');
 
 					List<string> tileStrings = new List<string>();
@@ -216,6 +220,7 @@ namespace Editor
 							name = "TileDefault";
 						}
 						GUI.Label(currentRect, _tileImages[name]);
+						GUI.Label(currentRect, name.Replace("Tile", ""));
 						if (!DetectClick(currentRect))
 						{
 							continue;
@@ -237,7 +242,7 @@ namespace Editor
 				MakeRect(20, 17);
 				if (GUI.Button(MakeRect(200, 17, true), "Add Line"))
 				{
-					wave.lines.Add("");
+					wave.lines.Insert(0, "");
 				}
 			}
 

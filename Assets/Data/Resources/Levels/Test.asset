@@ -14,5 +14,6 @@ MonoBehaviour:
   wavesList:
   - width: 4
     lines:
+    - TileDefault-TileDefault-TileDefault-TileDefault
     - TileTimedDeath-TileDefault-TileTimedDeath-TileDefault
     - TileDefault-TileTimedDeath-TileDefault-TileTimedDeath

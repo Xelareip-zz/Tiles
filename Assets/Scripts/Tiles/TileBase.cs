@@ -67,6 +67,7 @@ public class TileBase : MonoBehaviour
 
 	private void Awake()
 	{
+		clickableObj.SetActive(false);
 		TileManager.Instance.spawnedTiles.Add(this);
 		ProtectedAwake();
 	}
@@ -86,7 +87,7 @@ public class TileBase : MonoBehaviour
 	{
 		
 	}
-	
+	/*
 	private void Update()
 	{
 		clickableObj.SetActive(TilePlayer.Instance.IsTileCickable(this));
@@ -106,7 +107,7 @@ public class TileBase : MonoBehaviour
 				}
 			}
 		}
-	}
+	}*/
 
 	public static float DirectionToAngle(DIRECTIONS dir)
 	{
