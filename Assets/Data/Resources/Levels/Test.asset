@@ -17,3 +17,8 @@ MonoBehaviour:
     - TileDefault-TileDefault-TileDefault-TileDefault
     - TileTimedDeath-TileDefault-TileTimedDeath-TileDefault
     - TileDefault-TileTimedDeath-TileDefault-TileTimedDeath
+  - width: 4
+    lines:
+    - TileDefault-TileDefault-TileDefault-TileDefault
+    - TileRotateDeath0-TileRotateDeath1-TileRotateDeath2-TileRotateDeath3
+    - TileDefault-TileDefault-TileDefault-TileDefault

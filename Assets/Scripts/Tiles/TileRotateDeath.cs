@@ -1,41 +1,41 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class TileRotateDeath : TileBase
+public class TileRotateDeath : TileBase, IProgress
 {
 	public float delay;
-	public float offset;
+	public float timeLeft;
 	private bool _killMode;
 	public GameObject killModeVisual;
 
-	protected override void ProtectedAwake()
+
+	protected override void ProtectedUpdate()
 	{
-		base.ProtectedAwake();
+		timeLeft -= Time.deltaTime;
+		if (timeLeft <= 0)
+		{
+			timeLeft = delay;
+		}
 		
-		StartCoroutine(RotateKilling());
+		_killMode = timeLeft > delay / 2.0f;
+		killModeVisual.SetActive(_killMode);
+		// Means we are on this tile
+		if (_killMode && TilePlayer.Instance.LastTile() == this && TilePlayer.Instance.tilesQueue.Count == 0)
+		{
+			TilePlayer.Instance.EndGame();
+		}	
 	}
 
-	private IEnumerator RotateKilling()
-	{
-		yield return new WaitForSeconds(offset);
-		while (true)
-		{
-			yield return new WaitForSeconds(delay / 2.0f);
-			_killMode = !_killMode;
-			killModeVisual.SetActive(_killMode);
-			// Means we are on this tile
-			if (_killMode && TilePlayer.Instance.LastTile() == this && TilePlayer.Instance.tilesQueue.Count == 0)
-			{
-				TilePlayer.Instance.EndGame();
-			}	
-		}
-	}
-	
 	public override void TileReached()
 	{
 		if (_killMode)
 		{
 			TilePlayer.Instance.EndGame();	
 		}
+	}
+
+	public float GetProgress()
+	{
+		return (delay - timeLeft) / delay;
 	}
 }

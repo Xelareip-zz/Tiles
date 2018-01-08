@@ -77,6 +77,11 @@ public class TileBase : MonoBehaviour
 		
 	}
 
+	protected virtual void ProtectedUpdate()
+	{
+		
+	}
+
 	private void OnDestroy()
 	{
 		TileManager.Instance.spawnedTiles.Remove(this);
@@ -87,6 +92,12 @@ public class TileBase : MonoBehaviour
 	{
 		
 	}
+
+	private void Update()
+	{
+		ProtectedUpdate();
+	}
+
 	/*
 	private void Update()
 	{
