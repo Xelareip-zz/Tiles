@@ -9,6 +9,11 @@ public class TileTimedDeath : TileBase, IProgress
 	private bool _killMode;
 	public GameObject killModeVisual;
 	
+	private float GetDelay()
+	{
+		return delay / TileManager.Instance.GetDifficultyModifier();
+	}
+	
 	public override void TileReached()
 	{
 		if (_killMode)
@@ -23,7 +28,7 @@ public class TileTimedDeath : TileBase, IProgress
 
 	protected override void ProtectedAwake()
 	{
-		_timeLeft = delay;
+		_timeLeft = GetDelay();
 	}
 
 	protected override void ProtectedUpdate()

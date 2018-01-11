@@ -14,7 +14,6 @@ public class TilePlayer : MonoBehaviour
 	public float speed;
 
 	public List<TileBase> tileHistory = new List<TileBase>();
-	//public TileBase currentTile;
 	public List<TileBase> tilesQueue = new List<TileBase>();
 	public int inputQueueSize;
 
@@ -50,7 +49,7 @@ public class TilePlayer : MonoBehaviour
 		inputQueueSize = Parameters.Parameters.Instance.inputQueueSize < 0 ? int.MaxValue : Parameters.Parameters.Instance.inputQueueSize;
 		maxDistance = 0;
 		difficulty = 0;
-		autoMoveTimer = Parameters.Parameters.Instance.autoMoveDelay;
+		autoMoveTimer = GetAutomoveDelay();
 		cameraMove.followPlayer = true;
 	}
 
@@ -66,7 +65,12 @@ public class TilePlayer : MonoBehaviour
 
 	private float GetSpeed()
 	{
-		return speed * (difficulty * Parameters.Parameters.Instance.difficultyIncrease / 100.0f + 1.0f);
+		return speed * TileManager.Instance.GetDifficultyModifier();
+	}
+
+	private float GetAutomoveDelay()
+	{
+		return Parameters.Parameters.Instance.autoMoveDelay / TileManager.Instance.GetDifficultyModifier();
 	}
 
 	private float GetCameraSpeed()
@@ -251,7 +255,7 @@ public class TilePlayer : MonoBehaviour
 			if (autoMoveTile == tilesQueue[0])
 			{
 				autoMoveTile = null;
-				autoMoveTimer = Parameters.Parameters.Instance.autoMoveDelay;
+				autoMoveTimer = GetAutomoveDelay();
 			}
 			ArriveOnTile(tilesQueue[0]);
 			
@@ -285,7 +289,7 @@ public class TilePlayer : MonoBehaviour
 		tilesQueue.Clear();
 		ArriveOnTile(target);
 		autoMoveTile = null;
-		autoMoveTimer = Parameters.Parameters.Instance.autoMoveDelay;
+		autoMoveTimer = GetAutomoveDelay();
 	}
 
 	public void ForceTile(TileBase tile)
@@ -325,7 +329,7 @@ public class TilePlayer : MonoBehaviour
 
 	private void UpdateAutoMoveVisual()
 	{
-		float angle = 360.0f / Parameters.Parameters.Instance.autoMoveDelay * Mathf.Max(autoMoveTimer, 0.0f);
+		float angle = 360.0f / GetAutomoveDelay() * Mathf.Max(autoMoveTimer, 0.0f);
 
 		automoveVisual.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 	}

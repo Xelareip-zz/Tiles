@@ -55,6 +55,11 @@ public class TileManager : MonoBehaviour
 		TilePlayer.Instance.FindTile();
 		TilePlayer.Instance.transform.position = new Vector3(TilePlayer.Instance.LastTile().transform.position.x, TilePlayer.Instance.LastTile().transform.position.y, TilePlayer.Instance.transform.position.z);
     }
+	
+	public float GetDifficultyModifier()
+	{
+		return (Parameters.Parameters.Instance.difficultyIncrease * TilePlayer.Instance.maxDistance + 100.0f) / 100.0f;
+	}
 
 	private void FindWave()
 	{

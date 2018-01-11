@@ -9,15 +9,20 @@ public class TileRotateDeath : TileBase, IProgress
 	public GameObject killModeVisual;
 
 
+	private float GetDelay()
+	{
+		return delay / TileManager.Instance.GetDifficultyModifier();
+	}
+	
 	protected override void ProtectedUpdate()
 	{
 		timeLeft -= Time.deltaTime;
 		if (timeLeft <= 0)
 		{
-			timeLeft = delay;
+			timeLeft = GetDelay();
 		}
 		
-		_killMode = timeLeft > delay / 2.0f;
+		_killMode = timeLeft > GetDelay() / 2.0f;
 		killModeVisual.SetActive(_killMode);
 		// Means we are on this tile
 		if (_killMode && TilePlayer.Instance.LastTile() == this && TilePlayer.Instance.tilesQueue.Count == 0)
@@ -36,6 +41,6 @@ public class TileRotateDeath : TileBase, IProgress
 
 	public float GetProgress()
 	{
-		return (delay - timeLeft) / delay;
+		return (GetDelay() - timeLeft) / GetDelay();
 	}
 }
