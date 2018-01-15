@@ -14,19 +14,6 @@ public enum DIRECTIONS
 	NORTH_EAST,
 }
 
-public enum TILE_TYPE
-{
-	NORMAL,
-	OBSTACLE,
-	POINT,
-	FORCE_NORTH,
-	FORCE_EAST,
-	FORCE_WEST,
-	RANDOM,
-	BUMP,
-	JUMP
-}
-
 public class TileBase : MonoBehaviour
 {
 	public Collider2D coll;
@@ -142,6 +129,32 @@ public class TileBase : MonoBehaviour
 				return 315.0f;
 			default:
 				return float.MinValue;
+		}
+	}
+
+	public static DIRECTIONS AngleToDirection(float floatAngle)
+	{
+		int angle = Mathf.RoundToInt(floatAngle / 360 * 8) * 45;
+		switch(angle)
+		{
+			case 0:
+				return DIRECTIONS.NORTH;
+			case 45:
+				return DIRECTIONS.NORTH_WEST;
+			case 90:
+				return DIRECTIONS.WEST;
+			case 135:
+				return DIRECTIONS.SOUTH_WEST;
+			case 180:
+				return DIRECTIONS.SOUTH;
+			case 225:
+				return DIRECTIONS.SOUTH_EAST;
+			case 270:
+				return DIRECTIONS.EAST;
+			case 315:
+				return DIRECTIONS.NORTH_EAST;
+			default:
+				return DIRECTIONS.NORTH;
 		}
 	}
 

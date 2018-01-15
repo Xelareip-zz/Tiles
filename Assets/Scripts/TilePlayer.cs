@@ -10,6 +10,7 @@ public class TilePlayer : MonoBehaviour
 
 	public GameObject endGame;
 	public CameraMove cameraMove;
+	public Collider2D collider;
 
 	public float speed;
 
@@ -30,6 +31,8 @@ public class TilePlayer : MonoBehaviour
 	public float autoMoveTimer;
 	public GameObject automoveVisual;
 	public TileBase autoMoveTile;
+
+	public Vector3 lastPosition;
 
 	private bool TileReached()
 	{
@@ -275,6 +278,7 @@ public class TilePlayer : MonoBehaviour
 		ActivateClickableTiles();
 		DrawPath();
 		AdaptGhosts();
+		lastPosition = transform.position;
 	}
 
 	private void AdaptGhosts()
@@ -292,20 +296,29 @@ public class TilePlayer : MonoBehaviour
 		autoMoveTimer = GetAutomoveDelay();
 	}
 
-	public void ForceTile(TileBase tile)
+	public void ForceTile(TileBase tile, bool finishMove = true)
 	{
-		if (tile == null || autoMoveTimer <= 0)
+		if (tile == null)
 		{
 			return;
 		}
 		TileBase savedTile = null;
-		if (tilesQueue.Count > 0)
+		autoMoveTile = null;
+		if (finishMove)
 		{
-			savedTile = tilesQueue[0];
+			if (tilesQueue.Count > 0)
+			{
+				savedTile = tilesQueue[0];
+			}
+			tilesQueue.Clear();
+			QueueTile(savedTile);
+			QueueTile(tile);	
 		}
-		tilesQueue.Clear();
-		QueueTile(savedTile);
-		QueueTile(tile);
+		else
+		{
+			tilesQueue.Clear();
+			QueueTile(tile);
+		}
 	}
 	
 	private void AutoMove()
@@ -313,7 +326,7 @@ public class TilePlayer : MonoBehaviour
 		bool timerPassed = autoMoveTimer < 0.0f;
 		autoMoveTimer -= Time.deltaTime;
 
-		if (timerPassed || !(autoMoveTimer < 0.0f))
+		if (timerPassed == false || autoMoveTile != null)
 		{
 			return;
 		}
@@ -477,16 +490,6 @@ public class TilePlayer : MonoBehaviour
 	public bool IsTileCickable(TileBase tile)
 	{
 		return clickableTiles.Contains(tile);
-	}
-
-	private void OnTriggerEnter2D(Collider2D coll)
-	{
-		if (!coll.CompareTag("Wall"))
-		{
-			return;
-		}
-		endGame.SetActive(true);
-		Destroy(gameObject);
 	}
 
 	private bool GoToTile()
