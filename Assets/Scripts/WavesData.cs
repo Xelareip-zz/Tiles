@@ -37,7 +37,7 @@ public class WavesData : ScriptableObject
 			
 			foreach (string line in cleanWave.Split('\n'))
 			{
-				newData.lines.Add(line);
+				newData.lines.Insert(0, line);
 			}
 			wavesList.Add(newData);
 		}

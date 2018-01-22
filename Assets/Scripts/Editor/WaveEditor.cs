@@ -95,7 +95,7 @@ namespace Editor
 			bool typeChanged = false;
 			string clickedName = "";
 			GUI.Label(MakeRect(150, 17), "File to load");
-			file = (TextAsset)EditorGUI.ObjectField(MakeRect(250, 17, true), file, typeof(TextAsset));
+			file = (TextAsset)EditorGUI.ObjectField(MakeRect(250, 17, true), file, typeof(TextAsset), false);
 			if (GUI.Button(MakeRect(350, 17, true), "Load file"))
 			{
 				_data.LoadFile(file);
