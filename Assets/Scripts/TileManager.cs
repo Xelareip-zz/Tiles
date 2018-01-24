@@ -48,7 +48,7 @@ public class TileManager : MonoBehaviour
 		lineOffset = Parameters.Parameters.Instance.spaceSize;
 		for (int lineIdx = 0; lineIdx < tileLines.Count; ++lineIdx)
 		{
-			tileLines[lineIdx].SpawnTiles(currentWave.width);
+			tileLines[lineIdx].SpawnTiles(currentWave.GetWidth());
 		}
 		SpawnLines();
 		
@@ -115,7 +115,7 @@ public class TileManager : MonoBehaviour
 			}
 			else
 			{
-				newLine.SpawnTiles(currentWave.width);
+				newLine.SpawnTiles(currentWave.GetWidth());
 			}
             tileLines.Add(newLine);
 		}

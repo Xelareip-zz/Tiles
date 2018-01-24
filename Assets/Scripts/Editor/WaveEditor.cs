@@ -37,7 +37,7 @@ namespace Editor
 				_data.wavesList = new List<WaveData>();
 				_data.wavesList.Add(new WaveData());
 			}
-			_dataWidth = _data.wavesList[0].width;
+			_dataWidth = _data.wavesList[0].GetWidth();
 			
 			if (_selectedTexture == null)
 			{
@@ -180,7 +180,7 @@ namespace Editor
 				
 				_foldoutId = waveIdx;
 				WaveData wave = _data.wavesList[waveIdx];
-				wave.width = _dataWidth;
+				wave.SetWidth(_dataWidth);
 				for (int lineIdx = wave.lines.Count - 1; lineIdx >= 0; --lineIdx)
 				{
 					if (GUI.Button(MakeRect(20, 17), "X"))
@@ -192,7 +192,7 @@ namespace Editor
 
 					List<string> tileStrings = new List<string>();
 
-					for (int tileId = 0; tileId < wave.width; ++tileId)
+					for (int tileId = 0; tileId < wave.GetWidth(); ++tileId)
 					{
 						string name = "TileDefault";
 						if (tileStringsTab.Length > tileId)

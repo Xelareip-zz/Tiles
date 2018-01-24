@@ -6,13 +6,28 @@ using UnityEngine;
 public class WaveData
 {
 	[SerializeField]
-	public int width;
+	private int _width;
 	[SerializeField]
 	public List<string> lines = new List<string>();
 
 	public List<string> GetTiles(int lineIdx)
 	{
 		return lineIdx >= lines.Count ? null : new List<string>(lines[lineIdx].Split('-'));
+	}
+
+	public int GetWidth()
+	{
+		if (_width == 0)
+		{
+			_width = GetTiles(0).Count;
+		}
+
+		return _width;
+	}
+
+	public void SetWidth(int width)
+	{
+		_width = width;
 	}
 }
 
