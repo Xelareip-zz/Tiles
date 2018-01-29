@@ -100,6 +100,57 @@ namespace Editor
 			{
 				_data.LoadFile(file);
 			}
+			
+			for (int waveIdx = 0; waveIdx < _data.wavesList.Count; ++waveIdx)
+			{
+				MakeRect(20, 17);
+				bool foldout = EditorGUI.Foldout(MakeRect(200, 17, true), waveIdx == _foldoutId, "Wave " + waveIdx);
+
+				if (!foldout)
+				{
+					if (_foldoutId == waveIdx)
+					{
+						_foldoutId = -1;
+					}
+					continue;
+				}
+				
+				_foldoutId = waveIdx;
+				WaveData wave = _data.wavesList[waveIdx];
+				wave.SetWidth(_dataWidth);
+				for (int lineIdx = wave.lines.Count - 1; lineIdx >= 0; --lineIdx)
+				{
+					string[] tileStringsTab = wave.lines[lineIdx].Split('-');
+
+					List<string> tileStrings = new List<string>();
+
+					for (int tileId = 0; tileId < wave.GetWidth(); ++tileId)
+					{
+						string name = "TileDefault";
+						if (tileStringsTab.Length > tileId)
+						{
+							name = tileStringsTab[tileId];	
+						}
+
+						tileStrings.Add(name);
+						
+						Rect currentRect = MakeRect(150, 20);
+						GUI.Label(currentRect, name.Replace("Tile", ""));
+					}
+
+					string newString = string.Join("-", tileStrings.ToArray());
+					// ReSharper disable once RedundantCheckBeforeAssignment
+					if (_data.wavesList[waveIdx].lines[lineIdx] != newString)
+					{
+						_data.wavesList[waveIdx].lines[lineIdx] = newString;
+					}
+
+					NewLine();
+				}
+
+			}
+			
+			/*
 			NewLine();
 			if (GUI.Button(MakeRect(150, 17, true), "Refresh"))
 			{
@@ -244,7 +295,7 @@ namespace Editor
 				{
 					wave.lines.Insert(0, "");
 				}
-			}
+			}*/
 
 		}
 	}

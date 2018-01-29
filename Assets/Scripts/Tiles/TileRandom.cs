@@ -8,5 +8,7 @@ public class TileRandom : TileBase
 		TileBase target = TileManager.Instance.spawnedTiles[Random.Range(0, TileManager.Instance.spawnedTiles.Count)];
 		
 		TilePlayer.Instance.Teleport(target);
+		
+		base.TileReached();
 	}
 }

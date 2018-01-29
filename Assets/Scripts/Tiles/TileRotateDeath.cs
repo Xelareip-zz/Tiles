@@ -37,6 +37,8 @@ public class TileRotateDeath : TileBase, IProgress
 		{
 			TilePlayer.Instance.EndGame();	
 		}
+		
+		base.TileReached();
 	}
 
 	public float GetProgress()

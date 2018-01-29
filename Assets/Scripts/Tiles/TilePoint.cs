@@ -13,5 +13,7 @@ public class TilePoint : TileBase
 		ScoreManager.Instance.score += points;
 		points = 0;
 		Destroy(pointsVisual);
+		
+		base.TileReached();
 	}
 }

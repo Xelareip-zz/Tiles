@@ -12,6 +12,8 @@ public class TileMust : TileBase
 	{
 		reached = true;
 		Destroy(reachedVisual);
+		
+		base.TileReached();
 	}
 
 	void OnDestroy()

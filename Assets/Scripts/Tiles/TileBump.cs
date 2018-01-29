@@ -3,5 +3,7 @@
 	public override void TileReached()
 	{
 		TilePlayer.Instance.ForceTile(TilePlayer.Instance.LastTile(1));
+		
+		base.TileReached();
 	}
 }

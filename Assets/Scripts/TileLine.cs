@@ -23,14 +23,18 @@ public class TileLine : MonoBehaviour
 		
 		for (int i = 0; i < forcedTiles.Count; ++i)
 		{
-			if (TileManager.Instance.tileToPrefab.ContainsKey(forcedTiles[i]) == false)
+			string[] tileString = forcedTiles[i].Split('+');
+			string tileName = tileString[0];
+			
+			if (TileManager.Instance.tileToPrefab.ContainsKey(tileName) == false)
 			{
-				Debug.LogError("Wrong tile type: " + forcedTiles[i]);
+				Debug.LogError("Wrong tile type: " + tileName);
 			}
-			GameObject tileModel = TileManager.Instance.tileToPrefab[forcedTiles[i]];
+			GameObject tileModel = TileManager.Instance.tileToPrefab[tileName];
 			Vector3 tilePos = transform.position + Vector3.right * (-Parameters.Parameters.Instance.spaceSize * (lineWidth - 1) / 2.0f + Parameters.Parameters.Instance.spaceSize * i);
 			GameObject newTileObj = Instantiate(tileModel, tilePos, transform.rotation, transform);
 			TileBase newTile = newTileObj.GetComponent<TileBase>();
+			newTile.AddOptions(tileString);
 
 			newTile.parentLine = this;
 			tiles.Add(newTile);

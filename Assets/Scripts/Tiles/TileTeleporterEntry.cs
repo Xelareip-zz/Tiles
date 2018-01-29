@@ -29,6 +29,7 @@ public class TileTeleporterEntry : TileBase
 
 	private void ExitSpawned(TileTeleporterExit exit)
 	{
+		// ReSharper disable once InvertIf
 		if (target == null && exit.id == id)
 		{
 			target = exit;
@@ -39,5 +40,7 @@ public class TileTeleporterEntry : TileBase
 	public override void TileReached()
 	{
 		TilePlayer.Instance.Teleport(target);
+		
+		base.TileReached();
 	}
 }

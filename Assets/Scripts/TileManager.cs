@@ -10,7 +10,7 @@ public class TileManager : MonoBehaviour
 	public static TileManager Instance { get; private set; }
 
 	public List<GameObject> possibleLines;
-	public List<GameObject> possibleTiles;
+	//public List<GameObject> possibleTiles;
 
 	public List<TileLine> tileLines = new List<TileLine>();
 
@@ -22,6 +22,7 @@ public class TileManager : MonoBehaviour
 	public int currentLine;
 
 	public Dictionary<string, GameObject> tileToPrefab;
+	public Dictionary<string, GameObject> attachmentToPrefab;
 
 	public List<TileBase> spawnedTiles;
 
@@ -31,11 +32,18 @@ public class TileManager : MonoBehaviour
 		spawnedTiles = new List<TileBase>();
 		TileLine.lineCount = 0;
 
-		possibleTiles = Resources.LoadAll<GameObject>("Tiles").ToList();
+		List<GameObject> possibleTiles = Resources.LoadAll<GameObject>("Tiles").ToList();
 		tileToPrefab = new Dictionary<string, GameObject>();
 		for (int tileIdx = 0; tileIdx < possibleTiles.Count; ++tileIdx)
 		{
 			tileToPrefab.Add(possibleTiles[tileIdx].name, possibleTiles[tileIdx]);
+		}
+		
+		List<GameObject> possibleAttachments = Resources.LoadAll<GameObject>("Attachments").ToList();
+		attachmentToPrefab = new Dictionary<string, GameObject>();
+		for (int attachmentIdx = 0; attachmentIdx < possibleAttachments.Count; ++attachmentIdx)
+		{
+			attachmentToPrefab.Add(possibleAttachments[attachmentIdx].name, possibleAttachments[attachmentIdx]);
 		}
 
 		data = Resources.Load<WavesData>("Levels/" + Parameters.Parameters.Instance.levels);

@@ -7,7 +7,7 @@ public class TileWall : MonoBehaviour
 
 	private void Update()
 	{
-		if (collider.IsTouching(TilePlayer.Instance.collider, contactFilter))
+		if (collider.IsTouching(TilePlayer.Instance.collider))
 		{
 			TilePlayer.Instance.ForceTile(TilePlayer.Instance.LastTile(), false);			
 		}

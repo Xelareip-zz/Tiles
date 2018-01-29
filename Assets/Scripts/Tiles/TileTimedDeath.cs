@@ -24,6 +24,7 @@ public class TileTimedDeath : TileBase, IProgress
 		{
 			_triggered = true;
 		}
+		base.TileReached();
 	}
 
 	protected override void ProtectedAwake()

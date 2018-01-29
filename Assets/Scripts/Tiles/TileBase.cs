@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+// ReSharper disable ForCanBeConvertedToForeach
 
 public enum DIRECTIONS
 {
@@ -30,12 +31,31 @@ public class TileBase : MonoBehaviour
 	public GameObject clickableObj;
 	public TileLine parentLine;
 
+	public List<Attachment> attachments = new List<Attachment>();
+
 	public virtual void TileReached()
 	{
+		for (int idx = 0; idx < attachments.Count; ++idx)
+		{
+			attachments[idx].OnTileReached();
+		}
 	}
 
 	public virtual void TileLeft()
 	{
+	}
+
+	public virtual void AddOptions(string[] fullString)
+	{
+		for (int paramIdx = 1; paramIdx < fullString.Length; ++paramIdx)
+		{
+			if (TileManager.Instance.attachmentToPrefab.ContainsKey(fullString[paramIdx]))
+			{
+				GameObject newAttachmentGo = Instantiate(TileManager.Instance.attachmentToPrefab[fullString[paramIdx]], transform);
+				Attachment newAttachment = newAttachmentGo.GetComponent<Attachment>();
+				newAttachment.tile = this;
+			}
+		}
 	}
 
 	bool HasInput()

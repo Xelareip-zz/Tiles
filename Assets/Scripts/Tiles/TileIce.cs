@@ -11,6 +11,8 @@ public class TileIce : TileBase
 		
 		TilePlayer.Instance.ForceTile(neighbors[(int)dir]);
 		
+		base.TileReached();
+		
 		/*
 		Array directions = Enum.GetValues(typeof(DIRECTIONS));
 		for (int direction = 0; direction < directions.Length; ++direction)

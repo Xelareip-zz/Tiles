@@ -14,5 +14,7 @@ public class TileAutoMove : TileBase
 	public override void TileReached()
 	{
 		TilePlayer.Instance.ForceTile(neighbors[(int) direction]);
+		
+		base.TileReached();
 	}
 }
