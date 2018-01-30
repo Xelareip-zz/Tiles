@@ -17,14 +17,19 @@ public class ScoreManager : MonoBehaviour
 	public Text scoreText;
 	public int score;
 
+	public Text coinsText;
+	public int coins;
+
 	void Awake()
 	{
 		instance = this;
 		score = 0;
+		coins = 0;
 	}
 	
 	void Update ()
 	{
 		scoreText.text = score.ToString();
+		coinsText.text = coins.ToString();
 	}
 }

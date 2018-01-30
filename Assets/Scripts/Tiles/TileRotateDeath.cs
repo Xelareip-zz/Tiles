@@ -33,12 +33,12 @@ public class TileRotateDeath : TileBase, IProgress
 
 	public override void TileReached()
 	{
+		base.TileReached();
+		
 		if (_killMode)
 		{
 			TilePlayer.Instance.EndGame();	
 		}
-		
-		base.TileReached();
 	}
 
 	public float GetProgress()

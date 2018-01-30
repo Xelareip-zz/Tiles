@@ -54,6 +54,7 @@ public class TileBase : MonoBehaviour
 				GameObject newAttachmentGo = Instantiate(TileManager.Instance.attachmentToPrefab[fullString[paramIdx]], transform);
 				Attachment newAttachment = newAttachmentGo.GetComponent<Attachment>();
 				newAttachment.tile = this;
+				attachments.Add(newAttachment);
 			}
 		}
 	}
